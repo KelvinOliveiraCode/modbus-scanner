@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    # O projeto foi escrito e testado no Windows. Rodar a suite no mesmo SO
+    # evita que um pressuposto de plataforma passe aqui e quebre no Linux.
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Conferir encoding dos arquivos de texto
+        # Caractere de substituicao ou ideograma CJK em arquivo de codigo
+        # aparece como lixo no diff do GitHub. Falhar aqui e mais barato.
+        run: python tools/verificar_encoding.py
+
+      - name: Verificar que o pacote importa
+        run: python -c "import modbuslab; print(modbuslab.__version__)"
+
+      - name: Rodar testes com cobertura
+        # fail_under=70 esta no pyproject.toml; cobertura abaixo derruba o build.
+        run: python -m pytest --cov=modbuslab --cov-report=term-missing --cov-report=xml
+
+      - name: Conferir cobertura minima
+        run: python -m coverage report --fail-under=70
+
+      - name: Prova de aceite
+        # Sobe o servidor de lab, varre o barramento e le os tres medidores
+        # por Modbus TCP. E o teste que a suite nao cobre sozinha: ela prova
+        # que cada funcao funciona, nao que o fluxo inteiro entrega os tres
+        # medidores, acha a sequencia de fase invertida e bate o consumo com
+        # os registradores.
+        run: python tools/verificar_aceite.py
+
+      - name: Conferir que os exemplos batem com o codigo
+        # Regenera os exemplos e falha se houver diferenca. Um exemplo
+        # desatualizado ensina o numero errado para quem le.
+        run: |
+          python tools/gerar_exemplos.py
+          git diff --exit-code -- exemplos/

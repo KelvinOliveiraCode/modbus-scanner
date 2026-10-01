@@ -1,0 +1,129 @@
+# Leitura de consumo por Modbus TCP
+
+Gerado por `python tools/gerar_exemplos.py`. O servidor de lab sobe
+numa porta livre e o consumo e lido **pela rede**, nao do objeto que
+originou os valores. Nada aqui foi escrito a mao.
+
+O lab planta 3 medidores, a varredura encontra os 3, e o medidor
+trifasico esta com a sequencia de fase invertida de proposito.
+
+## 1. Varredura do barramento
+
+```
+PS> python -m modbuslab varrer --porta 5020 --de 1 --ate 3
+Varredura em 127.0.0.1:5020 / bus sweep
+Unit ids sondados: 3
+
+ Unit  Respondeu   Funcao   Registrador 0  Observacao
+-----  ---------- -------  --------------  --------------------------
+    1  sim              4            2194  valor bruto 2194
+    2  sim              4            2197  valor bruto 2197
+    3  sim              4            9600  valor bruto 9600
+
+Devices encontrados: 3 de 3 sondados
+```
+
+## 2. Leitura de consumo pela rede
+
+```
+PS> python -m modbuslab ler --porta 5020 --de 1 --ate 3
+# Leitura de consumo por Modbus TCP
+# host / port: 127.0.0.1:5020
+# mapa / map: C:\Users\Kelvin\Desktop\portfolio-24\modbus-scanner\dados\mapa-de-registros.yaml
+# valores lidos pela rede / values read over the network
+
+ ID  Dispositivo      Tipo                       V       A        W     var     FP       kWh  Fases
+---------------------------------------------------------------------------------------------------
+  1  medidor-1pn      medidor monofasico     219.4   12.35     2430     890  0.939   18432.0  1
+  2  medidor-3pn      medidor trifasico      219.7   54.90    10980    3120  0.962   91240.0  3 (negativa)
+  3  medidor-demanda  medidor de demanda     220.3   43.58     9600    4100  0.920  412880.0  1
+
+
+Dispositivo 1 (medidor-1pn):
+   End  Registrador             Bruto  Valor
+  ----  -------------------- --------  --------------
+     0  tensao                   2194  219.4 V
+     1  corrente                 1235  12.35 A
+     2  potencia_ativa           2430  2430 W
+     3  potencia_reativa          890  890 var
+     4  energia              0000 4800  18432 kWh
+     6  frequencia               6001  60.01 Hz
+     7  fator_potencia            939  0.939
+
+Dispositivo 2 (medidor-3pn):
+   End  Registrador             Bruto  Valor
+  ----  -------------------- --------  --------------
+     0  tensao_l1                2197  219.7 V
+     1  tensao_l2                2201  220.1 V
+     2  tensao_l3                2192  219.2 V
+     3  corrente_l1              1840  18.4 A
+     4  corrente_l2              1790  17.9 A
+     5  corrente_l3              1860  18.6 A
+     6  angulo_l1                   0  0 graus
+     7  angulo_l2                1200  120 graus
+     8  angulo_l3                2400  240 graus
+     9  potencia_ativa          10980  10980 W
+    10  potencia_reativa         3120  3120 var
+    11  energia              0001 6468  91240 kWh
+    13  frequencia               5998  59.98 Hz
+    14  fator_potencia            962  0.962
+  Alertas:
+    - sequencia de fase invertida: ordem L1-L3-L2 em vez de L1-L2-L3
+
+Dispositivo 3 (medidor-demanda):
+   End  Registrador             Bruto  Valor
+  ----  -------------------- --------  --------------
+     0  demanda_ativa            9600  9600 W
+     1  demanda_reativa          4100  4100 var
+     2  energia_acumulada    0006 4CD0  412880 kWh
+     4  tensao                   2203  220.3 V
+     5  corrente                 4358  43.58 A
+     6  frequencia               6000  60 Hz
+     7  fator_potencia            919  0.919
+```
+
+## 3. Mapa de registradores
+
+```
+PS> python -m modbuslab mapa
+
+=== medidor_1pn ===
+ End  Nome                 Tipo    Pal  Escala  Unidade  Descricao
+------------------------------------------------------------------
+   0  tensao               uint16    1      10  V        Tensao fase-neutro
+   1  corrente             uint16    1     100  A        Corrente na fase
+   2  potencia_ativa       uint16    1       1  W        Potencia ativa instantanea
+   3  potencia_reativa     int16     1       1  var      Potencia reativa instantanea
+   4  energia              uint32    2       1  kWh      Energia ativa acumulada, dois enderecos
+   6  frequencia           uint16    1     100  Hz       Frequencia da rede
+   7  fator_potencia       uint16    1    1000           Fator de potencia medido
+
+=== medidor_3pn ===
+ End  Nome                 Tipo    Pal  Escala  Unidade  Descricao
+------------------------------------------------------------------
+   0  tensao_l1            uint16    1      10  V        Tensao da fase L1
+   1  tensao_l2            uint16    1      10  V        Tensao da fase L2
+   2  tensao_l3            uint16    1      10  V        Tensao da fase L3
+   3  corrente_l1          uint16    1     100  A        Corrente da fase L1
+   4  corrente_l2          uint16    1     100  A        Corrente da fase L2
+   5  corrente_l3          uint16    1     100  A        Corrente da fase L3
+   6  angulo_l1            uint16    1      10  graus    Angulo de fase de L1
+   7  angulo_l2            uint16    1      10  graus    Angulo de fase de L2
+   8  angulo_l3            uint16    1      10  graus    Angulo de fase de L3
+   9  potencia_ativa       uint16    1       1  W        Soma das potencias ativas das tres fases
+  10  potencia_reativa     int16     1       1  var      Soma das potencias reativas
+  11  energia              uint32    2       1  kWh      Energia ativa acumulada, dois enderecos
+  13  frequencia           uint16    1     100  Hz       Frequencia da rede
+  14  fator_potencia       uint16    1    1000           Fator de potencia medido
+
+=== medidor_demanda ===
+ End  Nome                 Tipo    Pal  Escala  Unidade  Descricao
+------------------------------------------------------------------
+   0  demanda_ativa        uint16    1       1  W        Demanda ativa maxima da janela
+   1  demanda_reativa      int16     1       1  var      Demanda reativa maxima
+   2  energia_acumulada    uint32    2       1  kWh      Energia acumulada, dois enderecos
+   4  tensao               uint16    1      10  V        Tensao de referencia do barramento
+   5  corrente             uint16    1     100  A        Corrente total
+   6  frequencia           uint16    1     100  Hz       Frequencia da rede
+   7  fator_potencia       uint16    1    1000           Fator de potencia medido
+```

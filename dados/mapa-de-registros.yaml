@@ -1,0 +1,191 @@
+# Mapa de registradores dos medidores ficticios.
+#
+# Enderecos comecam em zero e sao independentes entre dispositivos: o que separa
+# um medidor do outro no barramento e o unit id do MBAP, nao o endereco.
+#
+# O campo `escala` e o divisor do valor de engenharia. Com escala 10, um
+# registrador que vale 2200 no fio significa 220,0 V. A conversao e sempre
+# bruto / escala, nos dois sentidos.
+#
+# Registrador de 32 bits ocupa DOIS enderecos, com a palavra alta primeiro, que e
+# a convencao da Modicon. Energia acumulada e o caso que exige isso: um medidor
+# que passou de 65535 kWh nao cabe em 16 bits. E por isso que, depois de um
+# `energia` no endereco 4, o proximo registrador comeca no 6 e nao no 5.
+#
+# Angulos sao a unica forma honesta de detectar sequencia de fase invertida:
+# as tensoes linha-a-linha tem o mesmo RMS nas duas sequencias, entao a ordem
+# dos angulos e que carrega a informacao.
+
+medidor_1pn:
+  - nome: tensao
+    endereco: 0
+    tipo: uint16
+    unidade: V
+    escala: 10
+    descricao: "Tensao fase-neutro"
+  - nome: corrente
+    endereco: 1
+    tipo: uint16
+    unidade: A
+    escala: 100
+    descricao: "Corrente na fase"
+  - nome: potencia_ativa
+    endereco: 2
+    tipo: uint16
+    unidade: W
+    escala: 1
+    descricao: "Potencia ativa instantanea"
+  - nome: potencia_reativa
+    endereco: 3
+    tipo: int16
+    unidade: var
+    escala: 1
+    descricao: "Potencia reativa instantanea"
+  - nome: energia
+    endereco: 4
+    tipo: uint32
+    unidade: kWh
+    escala: 1
+    descricao: "Energia ativa acumulada, dois enderecos"
+  - nome: frequencia
+    endereco: 6
+    tipo: uint16
+    unidade: Hz
+    escala: 100
+    descricao: "Frequencia da rede"
+  - nome: fator_potencia
+    endereco: 7
+    tipo: uint16
+    unidade: ""
+    escala: 1000
+    descricao: "Fator de potencia medido"
+
+medidor_3pn:
+  - nome: tensao_l1
+    endereco: 0
+    tipo: uint16
+    unidade: V
+    escala: 10
+    descricao: "Tensao da fase L1"
+  - nome: tensao_l2
+    endereco: 1
+    tipo: uint16
+    unidade: V
+    escala: 10
+    descricao: "Tensao da fase L2"
+  - nome: tensao_l3
+    endereco: 2
+    tipo: uint16
+    unidade: V
+    escala: 10
+    descricao: "Tensao da fase L3"
+  - nome: corrente_l1
+    endereco: 3
+    tipo: uint16
+    unidade: A
+    escala: 100
+    descricao: "Corrente da fase L1"
+  - nome: corrente_l2
+    endereco: 4
+    tipo: uint16
+    unidade: A
+    escala: 100
+    descricao: "Corrente da fase L2"
+  - nome: corrente_l3
+    endereco: 5
+    tipo: uint16
+    unidade: A
+    escala: 100
+    descricao: "Corrente da fase L3"
+  - nome: angulo_l1
+    endereco: 6
+    tipo: uint16
+    unidade: graus
+    escala: 10
+    descricao: "Angulo de fase de L1"
+  - nome: angulo_l2
+    endereco: 7
+    tipo: uint16
+    unidade: graus
+    escala: 10
+    descricao: "Angulo de fase de L2"
+  - nome: angulo_l3
+    endereco: 8
+    tipo: uint16
+    unidade: graus
+    escala: 10
+    descricao: "Angulo de fase de L3"
+  - nome: potencia_ativa
+    endereco: 9
+    tipo: uint16
+    unidade: W
+    escala: 1
+    descricao: "Soma das potencias ativas das tres fases"
+  - nome: potencia_reativa
+    endereco: 10
+    tipo: int16
+    unidade: var
+    escala: 1
+    descricao: "Soma das potencias reativas"
+  - nome: energia
+    endereco: 11
+    tipo: uint32
+    unidade: kWh
+    escala: 1
+    descricao: "Energia ativa acumulada, dois enderecos"
+  - nome: frequencia
+    endereco: 13
+    tipo: uint16
+    unidade: Hz
+    escala: 100
+    descricao: "Frequencia da rede"
+  - nome: fator_potencia
+    endereco: 14
+    tipo: uint16
+    unidade: ""
+    escala: 1000
+    descricao: "Fator de potencia medido"
+
+medidor_demanda:
+  - nome: demanda_ativa
+    endereco: 0
+    tipo: uint16
+    unidade: W
+    escala: 1
+    descricao: "Demanda ativa maxima da janela"
+  - nome: demanda_reativa
+    endereco: 1
+    tipo: int16
+    unidade: var
+    escala: 1
+    descricao: "Demanda reativa maxima"
+  - nome: energia_acumulada
+    endereco: 2
+    tipo: uint32
+    unidade: kWh
+    escala: 1
+    descricao: "Energia acumulada, dois enderecos"
+  - nome: tensao
+    endereco: 4
+    tipo: uint16
+    unidade: V
+    escala: 10
+    descricao: "Tensao de referencia do barramento"
+  - nome: corrente
+    endereco: 5
+    tipo: uint16
+    unidade: A
+    escala: 100
+    descricao: "Corrente total"
+  - nome: frequencia
+    endereco: 6
+    tipo: uint16
+    unidade: Hz
+    escala: 100
+    descricao: "Frequencia da rede"
+  - nome: fator_potencia
+    endereco: 7
+    tipo: uint16
+    unidade: ""
+    escala: 1000
+    descricao: "Fator de potencia medido"
