@@ -124,7 +124,7 @@ python tools/verificar_encoding.py
 python tools/verificar_aceite.py
 ```
 
-- **306 testes**, **94%** de cobertura, piso configurado em 70%.
+- **306 testes**, **93%** de cobertura, piso configurado em 70%.
 - `verificar_encoding.py` falha se algum arquivo tiver caractere de
   substituicao (U+FFFD) ou ideograma CJK.
 - `verificar_aceite.py` implementa o criterio de aceite: sobe o servidor, varre o
@@ -285,7 +285,7 @@ python tools/verificar_encoding.py
 python tools/verificar_aceite.py
 ```
 
-- **306 tests**, **94%** coverage, floor configured at 70%.
+- **306 tests**, **93%** coverage, floor configured at 70%.
 - `verificar_encoding.py` fails if any file holds a replacement character
   (U+FFFD) or a CJK ideograph.
 - `verificar_aceite.py` implements the acceptance criterion: it starts the
@@ -358,7 +358,7 @@ modbus-lab/
 │   ├── dispositivos.py  Medidores ficticios e carga dos dados
 │   ├── consumo.py       Fator de potencia, potencia, kWh, sequencia de fase
 │   └── cli.py           Comandos servidor, varrer, ler, mapa
-├── tests/               306 testes, 94% de cobertura
+├── tests/               306 testes, 93% de cobertura
 ├── tools/
 │   ├── verificar_encoding.py   Gate de U+FFFD e ideograma CJK
 │   ├── verificar_aceite.py     Prova de aceite do criterio de aceitacao
