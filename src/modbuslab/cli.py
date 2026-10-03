@@ -36,6 +36,20 @@ DISPOSITIVOS_PADRAO = "dados/dispositivos.yaml"
 # ---------------------------------------------------------------------------
 
 
+def caminho_de_exibicao(destino: str | Path) -> str:
+    """Mostra caminho relativo quando o arquivo esta dentro do diretorio atual.
+
+    Returns a relative path when the file lives under the current directory,
+    so the output never leaks an absolute path from the operator machine.
+    """
+
+    caminho = Path(destino)
+    try:
+        return caminho.resolve().relative_to(Path.cwd()).as_posix()
+    except ValueError:
+        return caminho.as_posix()
+
+
 def ler_dispositivo(
     cliente: ClienteModbus,
     unit_id: int,
@@ -281,7 +295,7 @@ def _cmd_ler(args: argparse.Namespace) -> int:
     linhas: list[str] = []
     linhas.append("# Leitura de consumo por Modbus TCP")
     linhas.append(f"# host / port: {args.host}:{args.porta}")
-    linhas.append(f"# mapa / map: {args.mapa}")
+    linhas.append(f"# mapa / map: {caminho_de_exibicao(args.mapa)}")
     linhas.append("# valores lidos pela rede / values read over the network")
     linhas.append("")
 

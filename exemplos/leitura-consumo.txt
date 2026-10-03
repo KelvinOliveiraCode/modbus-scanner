@@ -29,7 +29,7 @@ Devices encontrados: 3 de 3 sondados
 PS> python -m modbuslab ler --porta 5020 --de 1 --ate 3
 # Leitura de consumo por Modbus TCP
 # host / port: 127.0.0.1:5020
-# mapa / map: C:\Users\Kelvin\Desktop\portfolio-24\modbus-scanner\dados\mapa-de-registros.yaml
+# mapa / map: dados/mapa-de-registros.yaml
 # valores lidos pela rede / values read over the network
 
  ID  Dispositivo      Tipo                       V       A        W     var     FP       kWh  Fases
