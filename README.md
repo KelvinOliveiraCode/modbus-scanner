@@ -268,7 +268,7 @@ phase sequence:
 To write the reading to a file:
 
 ```powershell
-python -m modbuslab ler --porta 5020 --saida examples/leitura-consumo.txt
+python -m modbuslab ler --porta 5020 --saida exemplos/leitura-consumo.txt
 ```
 
 To print the register map:
