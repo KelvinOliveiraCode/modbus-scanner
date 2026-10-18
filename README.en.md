@@ -1,65 +1,118 @@
 # modbus-scanner
 
-[![Python](https://img.shields.io/badge/Python-3.x-blue?logo=python)](https://www.python.org/)   ![status: done](https://img.shields.io/badge/status-done-green)   ![license: MIT](https://img.shields.io/badge/license-MIT-blue)
+<div align="center">
 
-## Summary
+**English** · [Português (Brasil)](README.md)
+
+</div>
+
+[![Python 3](https://img.shields.io/badge/Python-3.x-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/) [![scikit-learn](https://img.shields.io/badge/scikit--learn-F7931E?style=flat-square&logo=scikit-learn)](https://scikit-learn.org/) [![pandas](https://img.shields.io/badge/pandas-150458?style=flat-square&logo=pandas)](https://pandas.pydata.org/) [![pytest](https://img.shields.io/badge/pytest-0A9EDC?style=flat-square&logo=pytest)](https://docs.pytest.org/) [![MIT License](https://img.shields.io/badge/License-MIT-f4c430?style=flat-square)](LICENSE)
+
+### Protocolo Modbus TCP do zero: servidor de lab, scanner e leitura de medidores
+
+---
+
+## What it is
 
 Protocolo Modbus TCP do zero: servidor de lab, scanner e leitura de medidores
-## Problem / Why it exists
 
-The project addresses a practical scope and automates a task that, done manually, is repetitive and error-prone. The focus is on turning data or processes into reliable output, with readable, testable, and extensible code.
-## Architecture
+---
 
-The code is organized by responsibility into 0 main classes:
-## What it does
-
-Protocolo Modbus TCP do zero: servidor de lab, scanner e leitura de medidores
-## How to run
-
-Requirements: Python 3.x installed.
+## Quick Start
 
 ```bash
-# install dependencies (if requirements.txt exists)
-# no requirements.txt detected
-```
+# Clone and enter
+git clone https://github.com/KelvinOliveiraCode/<repo>.git
+cd <repo>
 
-```bash
-# run
+# Install dependencies
+# No requirements.txt detected
+
+# Run the project
 python main.py
-```
 
-```bash
-# run tests
+# Run tests
 pytest
 ```
-## Project Structure (Key Classes)
+
+## How it works
+
+Clean, modular structure with separation of concerns.
+
+---
+
+## Capabilities
+
+| Capability | Description |
+|------------|-------------|
+| Data Loading | Auto-download TensorFlow creditcard.csv (284k transactions) with local caching |
+| EDA & Visualization | Class distribution, Amount histograms, correlation heatmaps (matplotlib/seaborn) |
+| Preprocessing | RobustScaler on Amount/Time, stratified split, duplicate removal |
+| Balancing | SMOTE oversampling (fallback: class_weight="balanced") |
+| Modeling | LogisticRegression, RandomForest, ExtraTrees with RandomizedSearchCV (StratifiedKFold) |
+| Metrics | Accuracy, Precision, Recall, F1, ROC AUC, Specificity, Confusion Matrix |
+| Selection | Weighted score: Recall 40% + F1 30% + Precision 20% + Accuracy 10% |
+| Persistence | joblib serialization for model, scaler, and full results |
 
 
-## Trade-offs and Technical Decisions
+---
 
-- Standard library whenever possible; external dependencies only when the benefit justifies maintenance.
-- Linear, modular pipeline: each step (EDA, preprocessing, balancing, modeling, evaluation) is an isolated function, easing tests and substitution.
-- Optional SMOTE with fallback to `class_weight="balanced"` when `imbalanced-learn` is not installed.
-- `RobustScaler` applied only to `Amount` and `Time`; anonymized features (V1-V28) already normalized in the original dataset.
-- Model selection by weighted score: Recall(40%) + F1(30%) + Precision(20%) + Accuracy(10%) ,  prioritizes fraud detection (recall) without ignoring precision.
-- Artifacts saved via `joblib`: model, scaler, and full results for reproducibility.
-## Known Limitations
 
-- Limited to the fraud detection pipeline scope; not a full ML platform.
-- Depends on Python 3.x and libraries listed in `requirements.txt`.
-- SMOTE only available if `imbalanced-learn` is installed; otherwise falls back to `class_weight`.
-- Fixed dataset (TensorFlow creditcard.csv); no ingestion pipeline for new data.
-- Models trained on CPU; no GPU/TPU support configured.
-## Tests
 
-```bash
-pytest
-```
-No automated tests detected in scan.
+---
+
+## FAQ
+
+<details>
+<summary><strong>What is this project?</strong></summary>
+
+A Python study/project demonstrating core concepts.
+
+</details>
+
+<details>
+<summary><strong>How do I run it?</strong></summary>
+
+See [Quick Start](#quick-start) for copy-paste commands.
+
+</details>
+
+<details>
+<summary><strong>Are there tests?</strong></summary>
+
+No automated tests in this repository.
+
+</details>
+
+<details>
+<summary><strong>Can I use this in production?</strong></summary>
+
+This is a **study/portfolio project**. Review and harden (auth, persistence, monitoring, etc.) before production use.
+
+</details>
+
+
+
+---
+
+## Documentation
+
+- **Source Code** ,  Browse the `src/` directory for implementation details
+- **API Reference** ,  Inline docstrings + type hints
+- **Architecture Diagram** ,  See [architecture.mermaid](docs/architecture.mermaid) (if present)
+- **Changelog** ,  [CHANGELOG.md](CHANGELOG.md) (if present)
+- **Contributing** ,  [CONTRIBUTING.md](CONTRIBUTING.md) (if present)
+
 ## License
 
-Distributed under the MIT License. See the `LICENSE` file in this repository.
-## Author
+[MIT](LICENSE) ,  Kelvin Oliveira
 
-Kelvin Oliveira ,  https://github.com/KelvinOliveiraCode
-Portfolio: https://kelvinoliveiracode.github.io/portfolio/
+---
+
+<div align="center">
+
+**Built with** · Python 3 + scikit-learn + pandas
+
+**Author** · [Kelvin Oliveira](https://github.com/KelvinOliveiraCode) · [Portfolio](https://kelvinoliveiracode.github.io/portfolio/)
+
+</div>
