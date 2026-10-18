@@ -43,16 +43,16 @@ Estrutura limpa e modular com separação de responsabilidades.
 
 ## Capabilities
 
-| Capability | Description |
+| Capacidade | Descrição |
 |------------|-------------|
-| Data Loading | Auto-download TensorFlow creditcard.csv (284k transactions) with local caching |
-| EDA & Visualization | Class distribution, Amount histograms, correlation heatmaps (matplotlib/seaborn) |
-| Preprocessing | RobustScaler on Amount/Time, stratified split, duplicate removal |
-| Balancing | SMOTE oversampling (fallback: class_weight="balanced") |
-| Modeling | LogisticRegression, RandomForest, ExtraTrees with RandomizedSearchCV (StratifiedKFold) |
-| Metrics | Accuracy, Precision, Recall, F1, ROC AUC, Specificity, Confusion Matrix |
-| Selection | Weighted score: Recall 40% + F1 30% + Precision 20% + Accuracy 10% |
-| Persistence | joblib serialization for model, scaler, and full results |
+| Carregamento de Dados | Auto-download do TensorFlow creditcard.csv (284k transações) com cache local |
+| EDA e Visualização | Distribuição de classes, histogramas de Amount, heatmaps de correlação (matplotlib/seaborn) |
+| Pré-processamento | RobustScaler em Amount/Time, split estratificado, remoção de duplicatas |
+| Balanceamento | SMOTE oversampling (fallback: class_weight="balanced") |
+| Modelagem | LogisticRegression, RandomForest, ExtraTrees com RandomizedSearchCV (StratifiedKFold) |
+| Métricas | Accuracy, Precision, Recall, F1, ROC AUC, Specificity, Confusion Matrix |
+| Seleção | Score ponderado: Recall 40% + F1 30% + Precision 20% + Accuracy 10% |
+| Persistência | Serialização joblib para modelo, scaler e resultados completos |
 
 
 ---

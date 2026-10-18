@@ -41,18 +41,18 @@ Estrutura limpa e modular com separação de responsabilidades.
 
 ---
 
-## Capabilities
+## Capacidades
 
-| Capability | Description |
+| Capacidade | Descrição |
 |------------|-------------|
-| Data Loading | Auto-download TensorFlow creditcard.csv (284k transactions) with local caching |
-| EDA & Visualization | Class distribution, Amount histograms, correlation heatmaps (matplotlib/seaborn) |
-| Preprocessing | RobustScaler on Amount/Time, stratified split, duplicate removal |
-| Balancing | SMOTE oversampling (fallback: class_weight="balanced") |
-| Modeling | LogisticRegression, RandomForest, ExtraTrees with RandomizedSearchCV (StratifiedKFold) |
-| Metrics | Accuracy, Precision, Recall, F1, ROC AUC, Specificity, Confusion Matrix |
-| Selection | Weighted score: Recall 40% + F1 30% + Precision 20% + Accuracy 10% |
-| Persistence | joblib serialization for model, scaler, and full results |
+| Carregamento de Dados | Auto-download do TensorFlow creditcard.csv (284k transações) com cache local |
+| EDA e Visualização | Distribuição de classes, histogramas de Amount, heatmaps de correlação (matplotlib/seaborn) |
+| Pré-processamento | RobustScaler em Amount/Time, split estratificado, remoção de duplicatas |
+| Balanceamento | SMOTE oversampling (fallback: class_weight="balanced") |
+| Modelagem | LogisticRegression, RandomForest, ExtraTrees com RandomizedSearchCV (StratifiedKFold) |
+| Métricas | Accuracy, Precision, Recall, F1, ROC AUC, Specificity, Confusion Matrix |
+| Seleção | Score ponderado: Recall 40% + F1 30% + Precision 20% + Accuracy 10% |
+| Persistência | Serialização joblib para modelo, scaler e resultados completos |
 
 
 ---
@@ -61,33 +61,33 @@ Estrutura limpa e modular com separação de responsabilidades.
 
 ---
 
-## FAQ
+## Perguntas Frequentes
 
 <details>
-<summary><strong>What is this project?</strong></summary>
+<summary><strong>O que é este projeto?</strong></summary>
 
-A Python study/project demonstrating core concepts.
+Um estudo/projeto em Python demonstrando conceitos fundamentais.
 
 </details>
 
 <details>
-<summary><strong>How do I run it?</strong></summary>
+<summary><strong>Como executar?</strong></summary>
 
-See [Quick Start](#quick-start) for copy-paste commands.
-
-</details>
-
-<details>
-<summary><strong>Are there tests?</strong></summary>
-
-No automated tests in this repository.
+Veja [Início Rápido](#início-rápido) para comandos copiáveis.
 
 </details>
 
 <details>
-<summary><strong>Can I use this in production?</strong></summary>
+<summary><strong>Há testes?</strong></summary>
 
-This is a **study/portfolio project**. Review and harden (auth, persistence, monitoring, etc.) before production use.
+Nenhum teste automatizado neste repositório.
+
+</details>
+
+<details>
+<summary><strong>Posso usar em produção?</strong></summary>
+
+Este é um **projeto de estudo/portfólio**. Revise e endureça (auth, persistência, monitoramento, etc.) antes de usar em produção.
 
 </details>
 
@@ -95,15 +95,15 @@ This is a **study/portfolio project**. Review and harden (auth, persistence, mon
 
 ---
 
-## Documentation
+## Documentação
 
-- **Source Code** ,  Browse the `src/` directory for implementation details
-- **API Reference** ,  Inline docstrings + type hints
-- **Architecture Diagram** ,  See [architecture.mermaid](docs/architecture.mermaid) (if present)
-- **Changelog** ,  [CHANGELOG.md](CHANGELOG.md) (if present)
-- **Contributing** ,  [CONTRIBUTING.md](CONTRIBUTING.md) (if present)
+- **Código-Fonte** ,  Navegue pelo diretório `src/` para detalhes de implementação
+- **Referência da API** ,  Docstrings inline + type hints
+- **Diagrama de Arquitetura** ,  Veja [architecture.mermaid](docs/architecture.mermaid) (se presente)
+- **Changelog** ,  [CHANGELOG.md](CHANGELOG.md) (se presente)
+- **Contribuindo** ,  [CONTRIBUTING.md](CONTRIBUTING.md) (se presente)
 
-## License
+## Licença
 
 [MIT](LICENSE) ,  Kelvin Oliveira
 
@@ -111,8 +111,8 @@ This is a **study/portfolio project**. Review and harden (auth, persistence, mon
 
 <div align="center">
 
-**Built with** · Python 3 + scikit-learn + pandas
+**Construído com** · Python 3 + scikit-learn + pandas
 
-**Author** · [Kelvin Oliveira](https://github.com/KelvinOliveiraCode) · [Portfolio](https://kelvinoliveiracode.github.io/portfolio/)
+**Autor** · [Kelvin Oliveira](https://github.com/KelvinOliveiraCode) · [Portfolio](https://kelvinoliveiracode.github.io/portfolio/)
 
 </div>
