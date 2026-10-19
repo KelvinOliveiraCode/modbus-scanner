@@ -200,7 +200,7 @@ def _cmd_servidor(args: argparse.Namespace) -> int:
 
     try:
         while servidor.rodando:
-            servidor._parar.wait(0.5)
+            servidor.aguardar_parada(0.5)
     except KeyboardInterrupt:
         print("\nEncerrando / stopping...")
     finally:

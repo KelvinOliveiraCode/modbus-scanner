@@ -36,6 +36,7 @@ from .protocolo import (
     MAX_REGISTRADORES_LEITURA,
     MIN_REGISTRADORES_LEITURA,
     BYTES_ANTES_DO_COMPRIMENTO,
+    PROTOCOLO_MODBUS,
     TAMANHO_MAXIMO_QUADRO,
     TAMANHO_MBAP,
     ErroModbus,
@@ -210,7 +211,7 @@ class ServidorModbus:
         pdu_resposta = bytes([funcao, len(dados)]) + dados
         resposta_mbap = Mbap(
             transacao=mbap.transacao,
-            protocolo=0,
+            protocolo=PROTOCOLO_MODBUS,
             comprimento=len(pdu_resposta) + 1,
             unidade=mbap.unidade,
         )
@@ -303,6 +304,25 @@ class ServidorModbus:
             target=self._loop, name="modbus-aceite", daemon=True
         )
         self._thread.start()
+
+    def aguardar_parada(self, timeout: float) -> bool:
+        """Espera o laco de aceitacao terminar, ate um limite de tempo.
+
+        Wait for the accept loop to stop, up to a time limit.
+
+        Metodo publico porque a CLI precisa do laco sob controle: sem ele, a
+        unica forma de esperar seria tocar no evento interno da classe, e um
+        detalhe de implementacao vazando para fora vira dependencia de todo
+        consumidor.
+
+        Args:
+            timeout: Segundos maxima de espera.
+
+        Returns:
+            ``True`` se o laco parou dentro do tempo, ``False`` se o tempo
+            estourou com o servidor ainda rodando.
+        """
+        return self._parar.wait(timeout)
 
     def parar(self) -> None:
         """Desliga o laco e fecha o socket.
