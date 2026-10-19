@@ -20,7 +20,7 @@ import sys
 from pathlib import Path
 
 from .consumo import ResultadoConsumo, calcular
-from .dispositivos import carregar_ambiente
+from .dispositivos import GerenciadorDispositivos, carregar_ambiente
 from .protocolo import FC_READ_HOLDING, ExcecaoRemota, QuadroInvalido
 from .registros import MapaDeRegistros, tabela_do_mapa
 from .scanner import ClienteModbus, ScannerModbus
@@ -125,7 +125,7 @@ def montar_tabela_consumo(
 def montar_registros(
     leituras: list[tuple[int, str, str, ResultadoConsumo]],
     dados_por_dispositivo: dict[int, dict[str, float]],
-    gerenciador,
+    gerenciador: GerenciadorDispositivos,
 ) -> str:
     """Monta o detalhamento de registradores por dispositivo.
 
@@ -344,7 +344,9 @@ def _cmd_mapa(args: argparse.Namespace) -> int:
     return 0
 
 
-def _carregar_dados(args: argparse.Namespace):
+def _carregar_dados(
+    args: argparse.Namespace,
+) -> tuple[GerenciadorDispositivos, dict[str, MapaDeRegistros]]:
     """Carrega mapa e dispositivos de configuracao.
 
     Load the register map and the configured devices.
