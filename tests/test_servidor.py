@@ -21,7 +21,6 @@ from __future__ import annotations
 
 import socket
 import struct
-import threading
 from collections.abc import Iterator
 
 import pytest
@@ -37,7 +36,6 @@ from modbuslab.protocolo import (
     FC_READ_HOLDING,
     FC_READ_INPUT,
     ExcecaoRemota,
-    QuadroInvalido,
     RequisicaoLeitura,
     interpretar_resposta,
 )
@@ -385,7 +383,7 @@ class TestFramingCru:
     def test_comprimento_do_mbap(self, host_porta) -> None:
         # O campo de comprimento conta unidade + PDU, e o quadro tem
         # 6 + comprimento bytes. Somar 7 trava o servidor.
-        host, porta = host_porta
+        _host, _porta = host_porta
         req = RequisicaoLeitura(1, 1, FC_READ_INPUT, 0, 1).empacotar()
         comprimento = struct.unpack(">H", req[4:6])[0]
         assert comprimento == 6
@@ -537,7 +535,7 @@ class TestCriterioDeAceite:
     @pytest.fixture(scope="class")
     @staticmethod
     def leituras(ambiente) -> list[tuple]:
-        servidor, gerenciador, mapas = ambiente
+        servidor, gerenciador, _mapas = ambiente
         cliente = ClienteModbus("127.0.0.1", servidor.porta_em_uso, 3.0)
         cliente.conectar()
         saida = []
@@ -598,7 +596,9 @@ class TestContadores:
     def test_conta_excecoes(self, ambiente) -> None:
         servidor, _, _ = ambiente
         antes = servidor.excecoes_emitidas
-        with ClienteModbus("127.0.0.1", servidor.porta_em_uso, 3.0) as c:
-            with pytest.raises(ExcecaoRemota):
-                c.ler(1, 900, 1)  # endereco fora do mapa do medidor 1
+        with (
+            ClienteModbus("127.0.0.1", servidor.porta_em_uso, 3.0) as c,
+            pytest.raises(ExcecaoRemota),
+        ):
+            c.ler(1, 900, 1)  # endereco fora do mapa do medidor 1
         assert servidor.excecoes_emitidas > antes

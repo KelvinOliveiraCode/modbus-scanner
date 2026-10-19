@@ -156,7 +156,7 @@ class Registrador:
         Raises:
             ErroDeRegistro: Se o valor nao couber no tipo do registrador.
         """
-        bruto = int(round(valor * self.escala))
+        bruto = round(valor * self.escala)
         menor, maior = self._faixa_bruta
         if not (menor <= bruto <= maior):
             raise ErroDeRegistro(
@@ -396,7 +396,7 @@ def carregar_mapa(caminho: str | Path) -> dict[str, MapaDeRegistros]:
     Raises:
         ValueError: Se o topo do arquivo nao for um mapeamento.
     """
-    with open(caminho, "r", encoding="utf-8") as fh:
+    with open(caminho, encoding="utf-8") as fh:
         dados = yaml.safe_load(fh)
     if not isinstance(dados, dict):
         raise ValueError(f"{caminho}: esperado um mapeamento no topo do arquivo")

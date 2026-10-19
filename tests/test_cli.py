@@ -9,7 +9,6 @@ com os registradores do medidor, e nao com o objeto local que os originou.
 
 from __future__ import annotations
 
-import threading
 from collections.abc import Iterator
 from pathlib import Path
 
@@ -382,7 +381,7 @@ class TestLerDispositivo:
             c.fechar()
 
     def test_le_todos_os_registradores(self, cliente, ambiente) -> None:
-        g, mapas = ambiente
+        _g, mapas = ambiente
         dados = ler_dispositivo(cliente, 1, mapas["medidor_1pn"])
         assert len(dados) == len(mapas["medidor_1pn"].registradores)
 
@@ -430,7 +429,7 @@ class TestFormatacao:
     @pytest.fixture(scope="class")
     @staticmethod
     def leituras(lab: str) -> list[tuple]:
-        g, mapas = carregar_ambiente(DISPOSITIVOS, MAPA)
+        g, _mapas = carregar_ambiente(DISPOSITIVOS, MAPA)
         c = ClienteModbus("127.0.0.1", int(lab), 3.0)
         c.conectar()
         saida = []
@@ -456,7 +455,9 @@ class TestFormatacao:
         assert "kWh" in tabela
 
     def test_tabela_uma_linha_por_medidor(self, leituras: list[tuple]) -> None:
-        linhas = [l for l in montar_tabela_consumo(leituras).splitlines()[2:] if l]
+        linhas = [
+            linha for linha in montar_tabela_consumo(leituras).splitlines()[2:] if linha
+        ]
         assert len(linhas) == 3
 
     def test_tabela_mostra_a_sequencia(self, leituras: list[tuple]) -> None:

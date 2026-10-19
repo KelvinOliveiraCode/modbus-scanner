@@ -26,8 +26,8 @@ from .dispositivos import (
     carregar_dispositivos,
 )
 from .protocolo import (
-    ExcecaoRemota,
     ErroModbus,
+    ExcecaoRemota,
     Mbap,
     QuadroInvalido,
     RequisicaoLeitura,
@@ -63,7 +63,7 @@ __all__ = [
     "interpretar_resposta",
     "ler_requisicao",
     "montar_excecao",
-    "descrever_excecao",
+    "descricao_excecao",
     # Registradores
     "Registrador",
     "MapaDeRegistros",

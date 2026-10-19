@@ -80,7 +80,6 @@ def ler_dispositivo(
         ExcecaoRemota: Se o dispositivo recusar a leitura.
         QuadroInvalido: Se a resposta vier malformada.
     """
-    tamanho = mapa.tamanho
     brutos = cliente.ler(unit_id, 0, mapa.tamanho, funcao)
 
     dados: dict[str, float] = {}
@@ -224,7 +223,8 @@ def _cmd_varrer(args: argparse.Namespace) -> int:
         return 0
 
     print(
-        f"{'Unit':>5}  {'Respondeu':<10} {'Funcao':>7}  {'Registrador 0':>14}  Observacao"
+        f"{'Unit':>5}  {'Respondeu':<10} {'Funcao':>7}  "
+        f"{'Registrador 0':>14}  Observacao"
     )
     print(f"{'-' * 5}  {'-' * 10} {'-' * 7}  {'-' * 14}  {'-' * 26}")
     for d in resultado.devices:
@@ -251,9 +251,7 @@ def _cmd_ler(args: argparse.Namespace) -> int:
     """
     gerenciador, _mapas = _carregar_dados(args)
 
-    scanner = ScannerModbus(host=args.host, porta=args.porta, timeout=args.timeout)
     ids = _intervalo_ids(args)
-
     cliente = ClienteModbus(args.host, args.porta, args.timeout)
     leituras: list[tuple[int, str, str, ResultadoConsumo]] = []
     dados_por_dispositivo: dict[int, dict[str, float]] = {}

@@ -149,7 +149,7 @@ class Mbap:
         )
 
     @classmethod
-    def desempacotar(cls, dados: bytes) -> "Mbap":
+    def desempacotar(cls, dados: bytes) -> Mbap:
         """Le o cabecalho de um quadro.
 
         Parse the header of a frame.

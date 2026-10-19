@@ -21,13 +21,13 @@ from modbuslab.dispositivos import (
     carregar_dispositivos,
     registradores_de_energia,
 )
-from modbuslab.servidor import ServidorModbus
 from modbuslab.registros import (
     ErroDeRegistro,
     MapaDeRegistros,
     Registrador,
     carregar_mapa,
 )
+from modbuslab.servidor import ServidorModbus
 
 MAPA = "dados/mapa-de-registros.yaml"
 DISPOSITIVOS = "dados/dispositivos.yaml"

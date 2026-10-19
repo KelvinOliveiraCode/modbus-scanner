@@ -14,7 +14,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
 
 import yaml
 
@@ -185,7 +184,7 @@ def carregar_dispositivos(
         ValueError: Se o YAML for invalido, se um mapa nao existir ou se um
             valor nao couber no registrador correspondente.
     """
-    with open(caminho, "r", encoding="utf-8") as fh:
+    with open(caminho, encoding="utf-8") as fh:
         dados = yaml.safe_load(fh)
     if not isinstance(dados, dict):
         raise ValueError(f"{caminho}: esperado um mapeamento no topo do arquivo")

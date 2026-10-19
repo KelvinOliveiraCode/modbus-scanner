@@ -21,21 +21,20 @@ servidor precisa atender em ciclo, nao fechar depois da primeira resposta.
 
 from __future__ import annotations
 
+import contextlib
 import socket
 import struct
 import threading
 from typing import TYPE_CHECKING
 
 from .protocolo import (
+    BYTES_ANTES_DO_COMPRIMENTO,
     EX_ENDERECO_ILEGAL,
     EX_FUNCAO_ILEGAL,
     EX_VALOR_ILEGAL,
-    FC_READ_HOLDING,
-    FC_READ_INPUT,
     FUNCOES_SUPORTADAS,
     MAX_REGISTRADORES_LEITURA,
     MIN_REGISTRADORES_LEITURA,
-    BYTES_ANTES_DO_COMPRIMENTO,
     PROTOCOLO_MODBUS,
     TAMANHO_MAXIMO_QUADRO,
     TAMANHO_MBAP,
@@ -92,7 +91,7 @@ class ServidorModbus:
 
     def __init__(
         self,
-        gerenciador: "GerenciadorDispositivos",
+        gerenciador: GerenciadorDispositivos,
         host: str = "127.0.0.1",
         porta: int = 5020,
     ) -> None:
@@ -229,7 +228,7 @@ class ServidorModbus:
             while not self._parar.is_set():
                 try:
                     pedaco = conn.recv(512)
-                except socket.timeout:
+                except TimeoutError:
                     continue
                 except OSError:
                     break
@@ -255,10 +254,8 @@ class ServidorModbus:
                     except OSError:
                         return
         finally:
-            try:
+            with contextlib.suppress(OSError):
                 conn.close()
-            except OSError:
-                pass
 
     def _loop(self) -> None:
         """Laco de aceitacao.
@@ -274,7 +271,7 @@ class ServidorModbus:
                 break
             try:
                 conn, _endereco = sock.accept()
-            except socket.timeout:
+            except TimeoutError:
                 continue
             except OSError:
                 break
@@ -327,16 +324,14 @@ class ServidorModbus:
         """
         self._parar.set()
         if self._sock is not None:
-            try:
+            with contextlib.suppress(OSError):
                 self._sock.close()
-            except OSError:
-                pass
             self._sock = None
         if self._thread is not None:
             self._thread.join(timeout=3.0)
             self._thread = None
 
-    def __enter__(self) -> "ServidorModbus":
+    def __enter__(self) -> ServidorModbus:
         self.iniciar()
         return self
 
