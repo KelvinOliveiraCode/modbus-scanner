@@ -42,6 +42,10 @@ jobs:
         # aparece como lixo no diff do GitHub. Falhar aqui e mais barato.
         run: python tools/verificar_encoding.py
 
+      - name: Conferir os links dos READMEs
+        # Link quebrado em README e pior do que README sem link.
+        run: python tools/verificar_links.py
+
       - name: Lint
         run: ruff check --output-format=github .
 
