@@ -18,7 +18,7 @@ from typing import Any
 
 import yaml
 
-from .registros import MapaDeRegistros, Registrador
+from .registros import MapaDeRegistros, Registrador, carregar_mapa
 
 #: Tipos de medidor reconhecidos.
 TIPOS_MEDIDOR = ("medidor monofasico", "medidor trifasico", "medidor de demanda")
@@ -246,8 +246,6 @@ def carregar_ambiente(
     Returns:
         Par com o gerenciador e os mapas.
     """
-    from .registros import carregar_mapa
-
     mapa = carregar_mapa(caminho_mapa)
     gerenciador = carregar_dispositivos(caminho_dispositivos, mapa)
     return gerenciador, mapa
