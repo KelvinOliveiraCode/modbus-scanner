@@ -1,0 +1,37 @@
+name: Proposta de recurso
+description: Sugere uma capacidade nova para o modbuslab
+title: "[Feature] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Comece pelo problema, nao pela solucao. Diga o que o laboratorio nao
+        faz hoje e o que voce tentou fazer quando isso apareceu.
+
+        Exemplos, referencias e medicao ajudam. Sugestao sem lastro tambem e
+        bem-vinda.
+  - type: textarea
+    id: problema
+    attributes:
+      label: Problema
+      description: O que voce quer fazer e o que hoje trava.
+    validations:
+      required: true
+  - type: textarea
+    id: resultado
+    attributes:
+      label: Resultado esperado
+      description: O que passa a ser possivel, observavel de fora.
+    validations:
+      required: true
+  - type: textarea
+    id: alternativa
+    attributes:
+      label: Alternativas consideradas
+      description: Opcional. O que voce tentou e por que nao serviu.
+  - type: textarea
+    id: escopo
+    attributes:
+      label: Escopo
+      description: Opcional. O que entra e o que fica de fora da primeira versao.

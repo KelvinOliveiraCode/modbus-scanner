@@ -1,0 +1,40 @@
+name: Pull request title
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, edited]
+
+permissions: {}
+
+concurrency:
+  group: pr-title-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  pr-title:
+    name: Conventional PR title
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Validar o titulo no padrao Conventional Commits
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          python3 - <<'PY'
+          import os
+          import re
+          import sys
+
+          padrao = re.compile(
+              r"^(?:feat|fix|docs|refactor|perf|test|build|ci|chore|revert)"
+              r"(?:\([a-z0-9._/-]+\))?!?: .+"
+          )
+          titulo = os.environ.get("PR_TITLE", "")
+          if not padrao.match(titulo):
+              print(
+                  "O titulo do PR precisa seguir Conventional Commits, "
+                  "por exemplo: feat: adiciona leitura trifasica"
+              )
+              sys.exit(1)
+          PY
