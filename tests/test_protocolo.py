@@ -157,9 +157,7 @@ class TestInterpretarRespostaInvalida:
     """Resposta malformada ou de excecao."""
 
     def test_protocolo_errado(self) -> None:
-        quadro = bytearray(
-            RespostaLeitura(1, 1, FC_READ_INPUT, (1,)).empacotar()
-        )
+        quadro = bytearray(RespostaLeitura(1, 1, FC_READ_INPUT, (1,)).empacotar())
         quadro[2:4] = b"\x00\x01"
         with pytest.raises(QuadroInvalido):
             interpretar_resposta(bytes(quadro))
@@ -167,24 +165,24 @@ class TestInterpretarRespostaInvalida:
     def test_pdu_vazio(self) -> None:
         quadro = struct.pack(">HHHB", 1, 0, 1, 1)
         with pytest.raises(QuadroInvalido):
-             interpretar_resposta(quadro)
+            interpretar_resposta(quadro)
 
     def test_excecao(self) -> None:
         quadro = montar_excecao(1, 1, FC_READ_HOLDING, EX_ENDERECO_ILEGAL)
         with pytest.raises(ExcecaoRemota) as exc:
-             interpretar_resposta(quadro)
+            interpretar_resposta(quadro)
         assert exc.value.codigo == EX_ENDERECO_ILEGAL
         assert exc.value.funcao == FC_READ_HOLDING
 
     def test_excecao_sem_codigo(self) -> None:
         quadro = struct.pack(">HHHB", 1, 0, 2, 1) + bytes([0x83])
         with pytest.raises(QuadroInvalido):
-             interpretar_resposta(quadro)
+            interpretar_resposta(quadro)
 
     def test_funcao_desconhecida_na_resposta(self) -> None:
         quadro = struct.pack(">HHHB", 1, 0, 4, 1) + bytes([0x10, 2, 0, 0])
         with pytest.raises(QuadroInvalido):
-             interpretar_resposta(quadro)
+            interpretar_resposta(quadro)
 
     def test_contagem_de_bytes_incoerente(self) -> None:
         # Anuncia 4 bytes e entrega 2.
@@ -195,12 +193,12 @@ class TestInterpretarRespostaInvalida:
     def test_numero_impar_de_bytes(self) -> None:
         quadro = struct.pack(">HHHB", 1, 0, 4, 1) + bytes([FC_READ_INPUT, 3, 0, 1])
         with pytest.raises(QuadroInvalido):
-             interpretar_resposta(quadro)
+            interpretar_resposta(quadro)
 
     def test_sem_contagem_de_bytes(self) -> None:
         quadro = struct.pack(">HHHB", 1, 0, 2, 1) + bytes([FC_READ_INPUT])
         with pytest.raises(QuadroInvalido):
-             interpretar_resposta(quadro)
+            interpretar_resposta(quadro)
 
 
 class TestMontarExcecao:
@@ -234,9 +232,7 @@ class TestRoundTripCompleto:
 
     def test_ciclo_de_uma_leitura(self) -> None:
         req = RequisicaoLeitura(1234, 6, FC_READ_INPUT, 2, 3)
-        resp = RespostaLeitura(
-            req.transacao, req.unidade, req.funcao, (100, 200, 300)
-        )
+        resp = RespostaLeitura(req.transacao, req.unidade, req.funcao, (100, 200, 300))
         lida = interpretar_resposta(resp.empacotar())
         assert lida.transacao == req.transacao
         assert lida.unidade == req.unidade

@@ -216,9 +216,7 @@ class ClienteModbus:
         self._sock.sendall(requisicao.empacotar())
 
         cabecalho = self._ler_quadro(TAMANHO_MBAP)
-        tamanho = BYTES_ANTES_DO_COMPRIMENTO + int.from_bytes(
-            cabecalho[4:6], "big"
-        )
+        tamanho = BYTES_ANTES_DO_COMPRIMENTO + int.from_bytes(cabecalho[4:6], "big")
         if not (TAMANHO_MBAP < tamanho <= TAMANHO_MAXIMO_QUADRO):
             raise QuadroInvalido(f"comprimento de PDU invalido: {tamanho}")
 
@@ -370,8 +368,10 @@ class ScannerModbus:
                 confusao e exatamente o que uma ferramenta de diagnostico nao
                 pode produzir.
         """
-        alvo = intervalo if intervalo is not None else range(
-            self.primeiro_unit_id, self.ultimo_unit_id + 1
+        alvo = (
+            intervalo
+            if intervalo is not None
+            else range(self.primeiro_unit_id, self.ultimo_unit_id + 1)
         )
         resultado = ResultadoVarredura()
         for unit_id in alvo:

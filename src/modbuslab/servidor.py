@@ -169,17 +169,13 @@ class ServidorModbus:
 
         if len(pdu) < 5:
             self.excecoes_emitidas += 1
-            return montar_excecao(
-                mbap.transacao, mbap.unidade, funcao, EX_VALOR_ILEGAL
-            )
+            return montar_excecao(mbap.transacao, mbap.unidade, funcao, EX_VALOR_ILEGAL)
 
         endereco, quantidade = struct.unpack(">HH", pdu[1:5])
 
         if not (MIN_REGISTRADORES_LEITURA <= quantidade <= MAX_REGISTRADORES_LEITURA):
             self.excecoes_emitidas += 1
-            return montar_excecao(
-                mbap.transacao, mbap.unidade, funcao, EX_VALOR_ILEGAL
-            )
+            return montar_excecao(mbap.transacao, mbap.unidade, funcao, EX_VALOR_ILEGAL)
 
         with self._lock:
             brutos: list[int] = []

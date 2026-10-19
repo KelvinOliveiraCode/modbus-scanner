@@ -144,8 +144,9 @@ class Mbap:
         Returns:
             Os 7 bytes do MBAP.
         """
-        return struct.pack(">HHHB", self.transacao, self.protocolo,
-                           self.comprimento, self.unidade)
+        return struct.pack(
+            ">HHHB", self.transacao, self.protocolo, self.comprimento, self.unidade
+        )
 
     @classmethod
     def desempacotar(cls, dados: bytes) -> "Mbap":
@@ -259,9 +260,7 @@ def interpretar_resposta(quadro: bytes) -> RespostaLeitura:
     mbap = Mbap.desempacotar(quadro)
 
     if mbap.protocolo != PROTOCOLO_MODBUS:
-        raise QuadroInvalido(
-            f"identificador de protocolo {mbap.protocolo}, esperado 0"
-        )
+        raise QuadroInvalido(f"identificador de protocolo {mbap.protocolo}, esperado 0")
 
     pdu = quadro[TAMANHO_MBAP:]
     if not pdu:
@@ -291,7 +290,7 @@ def interpretar_resposta(quadro: bytes) -> RespostaLeitura:
         raise QuadroInvalido("bloco de dados com numero impar de bytes")
 
     valores = tuple(
-        int.from_bytes(corpo[i:i + 2], "big") for i in range(0, len(corpo), 2)
+        int.from_bytes(corpo[i : i + 2], "big") for i in range(0, len(corpo), 2)
     )
     return RespostaLeitura(
         transacao=mbap.transacao,
@@ -321,8 +320,7 @@ def ler_requisicao(quadro: bytes) -> RequisicaoLeitura:
 
     if len(pdu) < TAMANHO_PDU_LEITURA:
         raise QuadroInvalido(
-            f"PDU de requisicao com {len(pdu)} bytes, esperado "
-            f"{TAMANHO_PDU_LEITURA}"
+            f"PDU de requisicao com {len(pdu)} bytes, esperado {TAMANHO_PDU_LEITURA}"
         )
 
     funcao, endereco, quantidade = struct.unpack(">BHH", pdu[:TAMANHO_PDU_LEITURA])
@@ -335,9 +333,7 @@ def ler_requisicao(quadro: bytes) -> RequisicaoLeitura:
     )
 
 
-def montar_excecao(
-    transacao: int, unidade: int, funcao: int, codigo: int
-) -> bytes:
+def montar_excecao(transacao: int, unidade: int, funcao: int, codigo: int) -> bytes:
     """Monta um quadro de resposta de excecao.
 
     Build an exception response frame.

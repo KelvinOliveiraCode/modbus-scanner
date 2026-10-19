@@ -105,10 +105,12 @@ class TestGerenciador:
     def gerenciador(self) -> GerenciadorDispositivos:
         mapa = MapaDeRegistros(nome="t")
         mapa.adicionar(Registrador("x", 0))
-        return GerenciadorDispositivos(dispositivos=[
-            Dispositivo(1, "a", "medidor monofasico", mapa),
-            Dispositivo(2, "b", "medidor monofasico", mapa),
-        ])
+        return GerenciadorDispositivos(
+            dispositivos=[
+                Dispositivo(1, "a", "medidor monofasico", mapa),
+                Dispositivo(2, "b", "medidor monofasico", mapa),
+            ]
+        )
 
     def test_buscar(self, gerenciador: GerenciadorDispositivos) -> None:
         assert gerenciador.buscar(2).nome == "b"
@@ -119,10 +121,12 @@ class TestGerenciador:
     def test_unit_ids_ordenados(self) -> None:
         mapa = MapaDeRegistros(nome="t")
         mapa.adicionar(Registrador("x", 0))
-        g = GerenciadorDispositivos(dispositivos=[
-            Dispositivo(3, "c", "medidor monofasico", mapa),
-            Dispositivo(1, "a", "medidor monofasico", mapa),
-        ])
+        g = GerenciadorDispositivos(
+            dispositivos=[
+                Dispositivo(3, "c", "medidor monofasico", mapa),
+                Dispositivo(1, "a", "medidor monofasico", mapa),
+            ]
+        )
         assert g.unit_ids == [1, 3]
 
     def test_unit_id_repetido(self, gerenciador: GerenciadorDispositivos) -> None:
@@ -149,14 +153,18 @@ class TestCargaDoDisco:
     def test_nomes(self, ambiente: tuple) -> None:
         gerenciador, _ = ambiente
         assert [d.nome for d in gerenciador.dispositivos] == [
-            "medidor-1pn", "medidor-3pn", "medidor-demanda"
+            "medidor-1pn",
+            "medidor-3pn",
+            "medidor-demanda",
         ]
 
     def test_tem_os_tres_tipos_de_medidor(self, ambiente: tuple) -> None:
         gerenciador, _ = ambiente
         tipos = {d.tipo for d in gerenciador.dispositivos}
         assert tipos == {
-            "medidor monofasico", "medidor trifasico", "medidor de demanda"
+            "medidor monofasico",
+            "medidor trifasico",
+            "medidor de demanda",
         }
 
     def test_um_trifasico(self, ambiente: tuple) -> None:
@@ -175,8 +183,10 @@ class TestCargaDoDisco:
 
     def test_energia_acima_de_16_bits(self, ambiente: tuple) -> None:
         gerenciador, _ = ambiente
-        valores = [d.valores.get("energia", d.valores.get("energia_acumulada", 0))
-                   for d in gerenciador.dispositivos]
+        valores = [
+            d.valores.get("energia", d.valores.get("energia_acumulada", 0))
+            for d in gerenciador.dispositivos
+        ]
         # Pelo menos um medidor precisa de 32 bits, senao o registrador largo
         # do mapa seria motivo inutil.
         assert max(valores) > 65535

@@ -192,7 +192,7 @@ class Registrador:
                 f"recebi {len(palavras)}"
             )
         if len(palavras) > self.palavras:
-            palavras = palavras[:self.palavras]
+            palavras = palavras[: self.palavras]
 
         for p in palavras:
             if not (0 <= p <= UINT16_MAX):
@@ -218,8 +218,7 @@ class Registrador:
         menor, maior = self._faixa_bruta
         if not (menor <= bruto <= maior):
             raise ErroDeRegistro(
-                f"{self.nome}: valor {bruto} fora de {self.tipo} "
-                f"({menor}..{maior})"
+                f"{self.nome}: valor {bruto} fora de {self.tipo} ({menor}..{maior})"
             )
         return bruto / self.escala
 
@@ -247,8 +246,9 @@ class MapaDeRegistros:
                 o que inclui o segundo endereco de um registrador largo.
         """
         ocupados = self.enderecos_ocupados()
-        conflitos = [e for e in range(reg.endereco, reg.endereco + reg.palavras)
-                     if e in ocupados]
+        conflitos = [
+            e for e in range(reg.endereco, reg.endereco + reg.palavras) if e in ocupados
+        ]
         if conflitos:
             raise ErroDeRegistro(
                 f"{self.nome}: endereco {reg.endereco} ({reg.nome}) "
@@ -399,9 +399,7 @@ def carregar_mapa(caminho: str | Path) -> dict[str, MapaDeRegistros]:
     with open(caminho, "r", encoding="utf-8") as fh:
         dados = yaml.safe_load(fh)
     if not isinstance(dados, dict):
-        raise ValueError(
-            f"{caminho}: esperado um mapeamento no topo do arquivo"
-        )
+        raise ValueError(f"{caminho}: esperado um mapeamento no topo do arquivo")
     resultado: dict[str, MapaDeRegistros] = {}
     for nome_mapa, definicao in dados.items():
         mapa = MapaDeRegistros(nome=str(nome_mapa))

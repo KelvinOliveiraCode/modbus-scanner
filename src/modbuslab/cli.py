@@ -85,7 +85,7 @@ def ler_dispositivo(
 
     dados: dict[str, float] = {}
     for reg in mapa.ordenar_por_endereco():
-        palavras = brutos[reg.endereco:reg.endereco + reg.palavras]
+        palavras = brutos[reg.endereco : reg.endereco + reg.palavras]
         if len(palavras) < reg.palavras:
             # O bloco veio curto: o dispositivo nao expoe este registrador.
             continue
@@ -147,12 +147,8 @@ def montar_registros(
         dados = dados_por_dispositivo.get(unit_id, {})
         dispositivo = gerenciador.buscar(unit_id)
         blocos.append(f"\nDispositivo {unit_id} ({nome}):")
-        blocos.append(
-            f"  {'End':>4}  {'Registrador':<20} {'Bruto':>8}  Valor"
-        )
-        blocos.append(
-            f"  {'-' * 4}  {'-' * 20} {'-' * 8}  {'-' * 14}"
-        )
+        blocos.append(f"  {'End':>4}  {'Registrador':<20} {'Bruto':>8}  Valor")
+        blocos.append(f"  {'-' * 4}  {'-' * 20} {'-' * 8}  {'-' * 14}")
         if dispositivo is None:
             blocos.append("  dispositivo nao encontrado")
             continue
@@ -166,8 +162,7 @@ def montar_registros(
             )
             unidade = f" {reg.unidade}" if reg.unidade else ""
             blocos.append(
-                f"  {reg.endereco:>4}  {reg.nome:<20} {bruto:>8}  "
-                f"{valor:g}{unidade}"
+                f"  {reg.endereco:>4}  {reg.nome:<20} {bruto:>8}  {valor:g}{unidade}"
             )
         if r.alertas:
             blocos.append("  Alertas:")
@@ -194,8 +189,7 @@ def _cmd_servidor(args: argparse.Namespace) -> int:
     print(descrever_servidor(servidor))
     print("Funcao 3 (holding) e 4 (input) / functions 3 and 4")
     for d in gerenciador.dispositivos:
-        print(f"  unit id {d.id}: {d.nome} ({d.tipo}), "
-              f"{d.mapa.tamanho} registradores")
+        print(f"  unit id {d.id}: {d.nome} ({d.tipo}), {d.mapa.tamanho} registradores")
     print("CTRL+C para encerrar / press CTRL+C to stop")
 
     try:
@@ -213,9 +207,7 @@ def _cmd_varrer(args: argparse.Namespace) -> int:
 
     Sweep the bus and list who answers.
     """
-    scanner = ScannerModbus(
-        host=args.host, porta=args.porta, timeout=args.timeout
-    )
+    scanner = ScannerModbus(host=args.host, porta=args.porta, timeout=args.timeout)
     ids = _intervalo_ids(args)
     try:
         resultado = scanner.varrer_intervalo(ids)
@@ -231,7 +223,9 @@ def _cmd_varrer(args: argparse.Namespace) -> int:
         print("Nenhum device respondeu / no device answered")
         return 0
 
-    print(f"{'Unit':>5}  {'Respondeu':<10} {'Funcao':>7}  {'Registrador 0':>14}  Observacao")
+    print(
+        f"{'Unit':>5}  {'Respondeu':<10} {'Funcao':>7}  {'Registrador 0':>14}  Observacao"
+    )
     print(f"{'-' * 5}  {'-' * 10} {'-' * 7}  {'-' * 14}  {'-' * 26}")
     for d in resultado.devices:
         if d.tem_registrador_zero:
@@ -240,8 +234,10 @@ def _cmd_varrer(args: argparse.Namespace) -> int:
             nota = f"excecao {d.excecao}"
         else:
             nota = d.erro or "sem dados"
-        print(f"{d.unit_id:>5}  {'sim':<10} {d.funcao:>7}  "
-              f"{(d.valores[0] if d.valores else '-'):>14}  {nota}")
+        print(
+            f"{d.unit_id:>5}  {'sim':<10} {d.funcao:>7}  "
+            f"{(d.valores[0] if d.valores else '-'):>14}  {nota}"
+        )
 
     print()
     print(f"Devices encontrados: {resultado.total_respondidos} de {len(ids)} sondados")
@@ -255,9 +251,7 @@ def _cmd_ler(args: argparse.Namespace) -> int:
     """
     gerenciador, _mapas = _carregar_dados(args)
 
-    scanner = ScannerModbus(
-        host=args.host, porta=args.porta, timeout=args.timeout
-    )
+    scanner = ScannerModbus(host=args.host, porta=args.porta, timeout=args.timeout)
     ids = _intervalo_ids(args)
 
     cliente = ClienteModbus(args.host, args.porta, args.timeout)
@@ -279,15 +273,19 @@ def _cmd_ler(args: argparse.Namespace) -> int:
                 falhas.append(f"unit id {unit_id}: {exc}")
                 continue
             dados_por_dispositivo[unit_id] = dados
-            leituras.append((
-                unit_id,
-                dispositivo.nome,
-                dispositivo.tipo,
-                calcular(dados, numero_fases=dispositivo.fases),
-            ))
+            leituras.append(
+                (
+                    unit_id,
+                    dispositivo.nome,
+                    dispositivo.tipo,
+                    calcular(dados, numero_fases=dispositivo.fases),
+                )
+            )
     except OSError as exc:
-        print(f"Erro / error: nao foi possivel falar com {args.host}:{args.porta}: {exc}",
-              file=sys.stderr)
+        print(
+            f"Erro / error: nao foi possivel falar com {args.host}:{args.porta}: {exc}",
+            file=sys.stderr,
+        )
         return 3
     finally:
         cliente.fechar()
@@ -332,8 +330,11 @@ def _cmd_mapa(args: argparse.Namespace) -> int:
     if args.nome:
         mapa = mapas.get(args.nome)
         if mapa is None:
-            print(f"mapa desconhecido: {args.nome}. "
-                  f"Disponiveis: {', '.join(sorted(mapas))}", file=sys.stderr)
+            print(
+                f"mapa desconhecido: {args.nome}. "
+                f"Disponiveis: {', '.join(sorted(mapas))}",
+                file=sys.stderr,
+            )
             return 2
         print(f"Mapa {mapa.nome}")
         print(tabela_do_mapa(mapa))
@@ -387,12 +388,14 @@ def _comum(p: argparse.ArgumentParser) -> None:
     """
     p.add_argument("--host", default="127.0.0.1", help="Host do servidor")
     p.add_argument("--porta", type=int, default=5020, help="Porta TCP")
-    p.add_argument("--timeout", type=float, default=0.5,
-                   help="Tempo limite por requisicao, em segundos")
-    p.add_argument("--de", type=int, default=1,
-                   help="Primeiro unit id da varredura")
-    p.add_argument("--ate", type=int, default=20,
-                   help="Ultimo unit id da varredura")
+    p.add_argument(
+        "--timeout",
+        type=float,
+        default=0.5,
+        help="Tempo limite por requisicao, em segundos",
+    )
+    p.add_argument("--de", type=int, default=1, help="Primeiro unit id da varredura")
+    p.add_argument("--ate", type=int, default=20, help="Ultimo unit id da varredura")
 
 
 def construir_parser() -> argparse.ArgumentParser:

@@ -148,20 +148,16 @@ class TestClassificacaoDeSalto:
     def test_salto_nao_sistema(self) -> None:
         # Angulos em 90 graus: salto de 90, longe dos dois ideals.
         assert (
-            classificar_salto_pelo_angulo(0.0, 90.0, 180.0)
-            == SEQUENCIA_INDETERMINADA
+            classificar_salto_pelo_angulo(0.0, 90.0, 180.0) == SEQUENCIA_INDETERMINADA
         )
 
     def test_tolerancia_absorve_ruido(self) -> None:
         # Dois graus de erro de medicao nao devem virar alerta de campo.
-        assert (
-            classificar_salto_pelo_angulo(0.0, 238.0, 122.0) == SEQUENCIA_POSITIVA
-        )
+        assert classificar_salto_pelo_angulo(0.0, 238.0, 122.0) == SEQUENCIA_POSITIVA
 
     def test_erro_grande_da_indeterminado(self) -> None:
         assert (
-            classificar_salto_pelo_angulo(0.0, 200.0, 100.0)
-            == SEQUENCIA_INDETERMINADA
+            classificar_salto_pelo_angulo(0.0, 200.0, 100.0) == SEQUENCIA_INDETERMINADA
         )
 
     def test_tolerancia_customizada(self) -> None:
@@ -178,16 +174,12 @@ class TestAvaliarSequencia:
     """Veredito com explicacao."""
 
     def test_sistema_normal(self) -> None:
-        seq, alertas = avaliar_sequencia(
-            *POSITIVA, 220.0, 220.0, 220.0
-        )
+        seq, alertas = avaliar_sequencia(*POSITIVA, 220.0, 220.0, 220.0)
         assert seq == SEQUENCIA_POSITIVA
         assert alertas == []
 
     def test_sequencia_invertida(self) -> None:
-        seq, alertas = avaliar_sequencia(
-            *NEGATIVA, 220.0, 220.0, 220.0
-        )
+        seq, alertas = avaliar_sequencia(*NEGATIVA, 220.0, 220.0, 220.0)
         assert seq == SEQUENCIA_NEGATIVA
         assert any("invertida" in a for a in alertas)
 
@@ -338,9 +330,14 @@ class TestCalcularTrifasico:
 
     def test_sequencia_normal_nao_alerta(self) -> None:
         leitura = {
-            "tensao_l1": 220.0, "tensao_l2": 220.0, "tensao_l3": 220.0,
-            "angulo_l1": 0.0, "angulo_l2": 240.0, "angulo_l3": 120.0,
-            "potencia_ativa": 1000.0, "potencia_reativa": 0.0,
+            "tensao_l1": 220.0,
+            "tensao_l2": 220.0,
+            "tensao_l3": 220.0,
+            "angulo_l1": 0.0,
+            "angulo_l2": 240.0,
+            "angulo_l3": 120.0,
+            "potencia_ativa": 1000.0,
+            "potencia_reativa": 0.0,
         }
         r = calcular(leitura, numero_fases=3)
         assert r.sequencia_fase == SEQUENCIA_POSITIVA
@@ -349,8 +346,11 @@ class TestCalcularTrifasico:
 
     def test_sem_angulos_nao_avalia_sequencia(self) -> None:
         leitura = {
-            "tensao_l1": 220.0, "tensao_l2": 220.0, "tensao_l3": 220.0,
-            "potencia_ativa": 1000.0, "potencia_reativa": 0.0,
+            "tensao_l1": 220.0,
+            "tensao_l2": 220.0,
+            "tensao_l3": 220.0,
+            "potencia_ativa": 1000.0,
+            "potencia_reativa": 0.0,
         }
         r = calcular(leitura, numero_fases=3)
         assert r.sequencia_fase == ""
@@ -366,8 +366,10 @@ class TestCalcularTrifasico:
 
     def test_trifasico_sem_tensao_por_fase(self) -> None:
         leitura = {
-            "tensao": 220.0, "corrente": 10.0,
-            "potencia_ativa": 1000.0, "potencia_reativa": 0.0,
+            "tensao": 220.0,
+            "corrente": 10.0,
+            "potencia_ativa": 1000.0,
+            "potencia_reativa": 0.0,
         }
         r = calcular(leitura, numero_fases=3)
         assert r.tensao_v == pytest.approx(220.0)
@@ -377,18 +379,21 @@ class TestAlertaDeFatorDePotencia:
     """Divergencia entre o fator medido e o calculado."""
 
     def test_alerta_quando_discordam(self) -> None:
-        r = calcular({"potencia_ativa": 1000.0, "potencia_reativa": 0.0,
-                      "fator_potencia": 0.5})
+        r = calcular(
+            {"potencia_ativa": 1000.0, "potencia_reativa": 0.0, "fator_potencia": 0.5}
+        )
         assert any("discorda" in a for a in r.alertas)
 
     def test_sem_alerta_quando_batem(self) -> None:
-        r = calcular({"potencia_ativa": 1000.0, "potencia_reativa": 0.0,
-                      "fator_potencia": 1.0})
+        r = calcular(
+            {"potencia_ativa": 1000.0, "potencia_reativa": 0.0, "fator_potencia": 1.0}
+        )
         assert not any("discorda" in a for a in r.alertas)
 
     def test_tolerancia_de_cinco_por_cento(self) -> None:
-        r = calcular({"potencia_ativa": 1000.0, "potencia_reativa": 0.0,
-                      "fator_potencia": 0.97})
+        r = calcular(
+            {"potencia_ativa": 1000.0, "potencia_reativa": 0.0, "fator_potencia": 0.97}
+        )
         assert not any("discorda" in a for a in r.alertas)
 
 

@@ -54,8 +54,19 @@ def argumentos_ler(porta: str, extra: list[str] | None = None) -> list[str]:
     Build the arguments for the read command.
     """
     base = [
-        "ler", "--porta", porta, "--de", "1", "--ate", "3",
-        "--timeout", "3", "--mapa", MAPA, "--dispositivos", DISPOSITIVOS,
+        "ler",
+        "--porta",
+        porta,
+        "--de",
+        "1",
+        "--ate",
+        "3",
+        "--timeout",
+        "3",
+        "--mapa",
+        MAPA,
+        "--dispositivos",
+        DISPOSITIVOS,
     ]
     return base + (extra or [])
 
@@ -116,19 +127,51 @@ class TestLerConsumo:
         bruto.decode("utf-8")
 
     def test_intervalo_reduzido(self, lab: str, capsys) -> None:
-        assert main([
-            "ler", "--porta", lab, "--de", "2", "--ate", "2",
-            "--timeout", "3", "--mapa", MAPA, "--dispositivos", DISPOSITIVOS,
-        ]) == 0
+        assert (
+            main(
+                [
+                    "ler",
+                    "--porta",
+                    lab,
+                    "--de",
+                    "2",
+                    "--ate",
+                    "2",
+                    "--timeout",
+                    "3",
+                    "--mapa",
+                    MAPA,
+                    "--dispositivos",
+                    DISPOSITIVOS,
+                ]
+            )
+            == 0
+        )
         saida = capsys.readouterr().out
         assert "medidor-3pn" in saida
         assert "medidor-1pn" not in saida
 
     def test_intervalo_vazio(self, lab: str, capsys) -> None:
-        assert main([
-            "ler", "--porta", lab, "--de", "8", "--ate", "9",
-            "--timeout", "0.3", "--mapa", MAPA, "--dispositivos", DISPOSITIVOS,
-        ]) == 0
+        assert (
+            main(
+                [
+                    "ler",
+                    "--porta",
+                    lab,
+                    "--de",
+                    "8",
+                    "--ate",
+                    "9",
+                    "--timeout",
+                    "0.3",
+                    "--mapa",
+                    MAPA,
+                    "--dispositivos",
+                    DISPOSITIVOS,
+                ]
+            )
+            == 0
+        )
         assert "Nenhum medidor respondeu" in capsys.readouterr().out
 
     def test_servidor_fora_do_ar(self, tmp_path: Path, capsys) -> None:
@@ -146,8 +189,12 @@ class TestVarrer:
     """O comando de varredura."""
 
     def test_encontra_os_medidores(self, lab: str, capsys) -> None:
-        assert main(["varrer", "--porta", lab, "--de", "1", "--ate", "3",
-                     "--timeout", "3"]) == 0
+        assert (
+            main(
+                ["varrer", "--porta", lab, "--de", "1", "--ate", "3", "--timeout", "3"]
+            )
+            == 0
+        )
         saida = capsys.readouterr().out
         assert "Devices encontrados: 3" in saida
 
@@ -158,8 +205,22 @@ class TestVarrer:
     def test_sem_device(self, lab: str, capsys) -> None:
         # Intervalo sem nenhum device e sinal de que o servidor nao atende,
         # nao de que o barramento esta vazio. A saida e codigo 3.
-        assert main(["varrer", "--porta", lab, "--de", "8", "--ate", "9",
-                     "--timeout", "0.3"]) == 3
+        assert (
+            main(
+                [
+                    "varrer",
+                    "--porta",
+                    lab,
+                    "--de",
+                    "8",
+                    "--ate",
+                    "9",
+                    "--timeout",
+                    "0.3",
+                ]
+            )
+            == 3
+        )
         assert "nenhum device respondeu" in capsys.readouterr().err
 
     def test_servidor_fora_do_ar(self, capsys) -> None:
@@ -168,8 +229,22 @@ class TestVarrer:
         s.iniciar()
         porta = s.porta_em_uso
         s.parar()
-        assert main(["varrer", "--porta", str(porta), "--de", "1", "--ate", "2",
-                     "--timeout", "0.3"]) == 3
+        assert (
+            main(
+                [
+                    "varrer",
+                    "--porta",
+                    str(porta),
+                    "--de",
+                    "1",
+                    "--ate",
+                    "2",
+                    "--timeout",
+                    "0.3",
+                ]
+            )
+            == 3
+        )
         assert "Erro" in capsys.readouterr().err
 
 
@@ -184,20 +259,53 @@ class TestMapa:
         assert "medidor_demanda" in saida
 
     def test_mostra_um_mapa(self, capsys) -> None:
-        assert main(["mapa", "--mapa", MAPA, "--dispositivos", DISPOSITIVOS,
-                     "--nome", "medidor_3pn"]) == 0
+        assert (
+            main(
+                [
+                    "mapa",
+                    "--mapa",
+                    MAPA,
+                    "--dispositivos",
+                    DISPOSITIVOS,
+                    "--nome",
+                    "medidor_3pn",
+                ]
+            )
+            == 0
+        )
         saida = capsys.readouterr().out
         assert "angulo_l2" in saida
         assert "medidor_1pn" not in saida
 
     def test_mapa_desconhecido(self, capsys) -> None:
-        assert main(["mapa", "--mapa", MAPA, "--dispositivos", DISPOSITIVOS,
-                     "--nome", "nao_existe"]) == 2
+        assert (
+            main(
+                [
+                    "mapa",
+                    "--mapa",
+                    MAPA,
+                    "--dispositivos",
+                    DISPOSITIVOS,
+                    "--nome",
+                    "nao_existe",
+                ]
+            )
+            == 2
+        )
         assert "mapa desconhecido" in capsys.readouterr().err
 
     def test_mostra_a_largura(self, capsys) -> None:
-        main(["mapa", "--mapa", MAPA, "--dispositivos", DISPOSITIVOS,
-              "--nome", "medidor_1pn"])
+        main(
+            [
+                "mapa",
+                "--mapa",
+                MAPA,
+                "--dispositivos",
+                DISPOSITIVOS,
+                "--nome",
+                "medidor_1pn",
+            ]
+        )
         assert "uint32" in capsys.readouterr().out
 
 
@@ -245,8 +353,9 @@ class TestParser:
         assert "Erro" in capsys.readouterr().err
 
     def test_mapa_inexistente(self, capsys) -> None:
-        codigo = main(["mapa", "--mapa", "nao_existe.yaml",
-                       "--dispositivos", DISPOSITIVOS])
+        codigo = main(
+            ["mapa", "--mapa", "nao_existe.yaml", "--dispositivos", DISPOSITIVOS]
+        )
         assert codigo == 2
 
 
@@ -329,8 +438,14 @@ class TestFormatacao:
             for uid in g.unit_ids:
                 disp = g.buscar(uid)
                 dados = ler_dispositivo(c, uid, disp.mapa)
-                saida.append((uid, disp.nome, disp.tipo,
-                              calcular(dados, numero_fases=disp.fases)))
+                saida.append(
+                    (
+                        uid,
+                        disp.nome,
+                        disp.tipo,
+                        calcular(dados, numero_fases=disp.fases),
+                    )
+                )
         finally:
             c.fechar()
         return saida

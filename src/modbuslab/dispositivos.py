@@ -116,8 +116,7 @@ class Dispositivo:
         All engineering values, keyed by register name.
         """
         return {
-            reg.nome: self.valores.get(reg.nome, 0.0)
-            for reg in self.mapa.registradores
+            reg.nome: self.valores.get(reg.nome, 0.0) for reg in self.mapa.registradores
         }
 
 
@@ -219,8 +218,7 @@ def carregar_dispositivos(
             reg = mapa_do_dispositivo.buscar(str(nome_reg))
             if reg is None:
                 raise ValueError(
-                    f"{nome}: registrador '{nome_reg}' nao existe no mapa "
-                    f"'{nome_mapa}'"
+                    f"{nome}: registrador '{nome_reg}' nao existe no mapa '{nome_mapa}'"
                 )
             dispositivo.valores[reg.nome] = float(valor)
             # Valida o valor agora, e nao no primeiro atendimento do servidor.
@@ -264,11 +262,21 @@ def registradores_de_energia(mapa: MapaDeRegistros) -> list[Registrador]:
         em ordem de endereco.
     """
     relevantes = {
-        "tensao", "tensao_l1", "tensao_l2", "tensao_l3",
-        "corrente", "corrente_l1", "corrente_l2", "corrente_l3",
-        "potencia_ativa", "potencia_reativa",
-        "demanda_ativa", "demanda_reativa",
-        "energia", "energia_acumulada",
-        "frequencia", "fator_potencia",
+        "tensao",
+        "tensao_l1",
+        "tensao_l2",
+        "tensao_l3",
+        "corrente",
+        "corrente_l1",
+        "corrente_l2",
+        "corrente_l3",
+        "potencia_ativa",
+        "potencia_reativa",
+        "demanda_ativa",
+        "demanda_reativa",
+        "energia",
+        "energia_acumulada",
+        "frequencia",
+        "fator_potencia",
     }
     return [r for r in mapa.ordenar_por_endereco() if r.nome in relevantes]
