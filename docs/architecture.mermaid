@@ -1,0 +1,60 @@
+graph TD
+    subgraph "Entry point"
+        CLI["src/modbuslab/cli.py<br/>Argument parsing and rendering<br/>server, sweep, read, map"]
+    end
+
+    subgraph "Wire format"
+        PROTOCOLO["src/modbuslab/protocolo.py<br/>MBAP header and PDU<br/>encode, decode, exception codes<br/>no dependency on the other modules"]
+    end
+
+    subgraph "Meter model"
+        REGISTROS["src/modbuslab/registros.py<br/>Register map and scale<br/>raw words to engineering values"]
+        DISPOSITIVOS["src/modbuslab/dispositivos.py<br/>Meters and meter manager<br/>loads the YAML environment"]
+    end
+
+    subgraph "Electrical calculation"
+        CONSUMO["src/modbuslab/consumo.py<br/>Power factor, apparent power<br/>phase sequence, unbalance"]
+    end
+
+    subgraph "TCP"
+        SERVIDOR["src/modbuslab/servidor.py<br/>Accept loop, partial reads<br/>one client at a time"]
+        SCANNER["src/modbuslab/scanner.py<br/>Modbus client and bus sweep"]
+    end
+
+    subgraph "Data"
+        DADOS["dados/*.yaml<br/>register map and meters<br/>fictional engineering values"]
+    end
+
+    subgraph "Tests"
+        TESTES["tests/<br/>pytest suite per module<br/>plus the public API contract"]
+        ACEITE["tools/verificar_aceite.py<br/>end-to-end acceptance proof"]
+        EXEMPLOS["tools/gerar_exemplos.py<br/>regenerates exemplos/ from real output"]
+    end
+
+    CLI --> SERVIDOR
+    CLI --> SCANNER
+    CLI --> DISPOSITIVOS
+    CLI --> CONSUMO
+    CLI --> REGISTROS
+    CLI --> PROTOCOLO
+
+    SERVIDOR --> PROTOCOLO
+    SERVIDOR --> DISPOSITIVOS
+    SCANNER --> PROTOCOLO
+    DISPOSITIVOS --> REGISTROS
+    DISPOSITIVOS --> DADOS
+    REGISTROS --> DADOS
+
+    CONSUMO -.->|no module dependency| PROTOCOLO
+
+    TESTES -.-> PROTOCOLO
+    TESTES -.-> REGISTROS
+    TESTES -.-> DISPOSITIVOS
+    TESTES -.-> CONSUMO
+    TESTES -.-> SERVIDOR
+    TESTES -.-> SCANNER
+    TESTES -.-> CLI
+    ACEITE -.-> CLI
+    ACEITE -.-> SERVIDOR
+    ACEITE -.-> SCANNER
+    EXEMPLOS -.-> CLI

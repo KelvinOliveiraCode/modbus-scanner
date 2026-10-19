@@ -78,11 +78,13 @@ def main() -> int:
                     f"\nunit {unit_id} {dispositivo.nome}"
                     f" ({dispositivo.tipo}, {dispositivo.fases} fase(s))"
                 )
-                print(f"  V={resultado.tensao_v:.1f} V"
-                      f"  A={resultado.corrente_a:.2f} A"
-                      f"  P={resultado.potencia_ativa_w:.0f} W"
-                      f"  FP={resultado.fator_potencia:.3f}"
-                      f"  E={resultado.energia_kwh:.0f} kWh")
+                print(
+                    f"  V={resultado.tensao_v:.1f} V"
+                    f"  A={resultado.corrente_a:.2f} A"
+                    f"  P={resultado.potencia_ativa_w:.0f} W"
+                    f"  FP={resultado.fator_potencia:.3f}"
+                    f"  E={resultado.energia_kwh:.0f} kWh"
+                )
                 if resultado.sequencia_fase:
                     print(f"  sequencia de fase: {resultado.sequencia_fase}")
                 for alerta in resultado.alertas:
@@ -90,8 +92,7 @@ def main() -> int:
 
                 # O consumo tem de bater com o registrador do medidor.
                 chave = (
-                    "potencia_ativa" if "potencia_ativa" in dados
-                    else "demanda_ativa"
+                    "potencia_ativa" if "potencia_ativa" in dados else "demanda_ativa"
                 )
                 if abs(dados[chave] - resultado.potencia_ativa_w) > 1e-6:
                     falhas.append(
@@ -119,9 +120,11 @@ def main() -> int:
         finally:
             cliente.fechar()
 
-        print(f"\n{len(gerenciador)} medidores lidos, "
-              f"{servidor.requisicoes_atendidas} requisicoes atendidas, "
-              f"{servidor.excecoes_emitidas} excecoes")
+        print(
+            f"\n{len(gerenciador)} medidores lidos, "
+            f"{servidor.requisicoes_atendidas} requisicoes atendidas, "
+            f"{servidor.excecoes_emitidas} excecoes"
+        )
     finally:
         servidor.parar()
 

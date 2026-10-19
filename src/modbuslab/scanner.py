@@ -19,16 +19,17 @@ isso que a varredura leva tempo: cada id morto custa um timeout.
 
 from __future__ import annotations
 
+import contextlib
 import socket
 from dataclasses import dataclass, field
 
 from .protocolo import (
     BYTES_ANTES_DO_COMPRIMENTO,
+    FC_READ_HOLDING,
+    FC_READ_INPUT,
     TAMANHO_MAXIMO_QUADRO,
     TAMANHO_MBAP,
     ExcecaoRemota,
-    FC_READ_HOLDING,
-    FC_READ_INPUT,
     QuadroInvalido,
     RequisicaoLeitura,
     interpretar_resposta,
@@ -131,10 +132,8 @@ class ClienteModbus:
         Close the connection.
         """
         if self._sock is not None:
-            try:
+            with contextlib.suppress(OSError):
                 self._sock.close()
-            except OSError:
-                pass
             self._sock = None
 
     def _proxima_transacao(self) -> int:
@@ -216,9 +215,7 @@ class ClienteModbus:
         self._sock.sendall(requisicao.empacotar())
 
         cabecalho = self._ler_quadro(TAMANHO_MBAP)
-        tamanho = BYTES_ANTES_DO_COMPRIMENTO + int.from_bytes(
-            cabecalho[4:6], "big"
-        )
+        tamanho = BYTES_ANTES_DO_COMPRIMENTO + int.from_bytes(cabecalho[4:6], "big")
         if not (TAMANHO_MBAP < tamanho <= TAMANHO_MAXIMO_QUADRO):
             raise QuadroInvalido(f"comprimento de PDU invalido: {tamanho}")
 
@@ -232,7 +229,7 @@ class ClienteModbus:
             )
         return resposta.valores
 
-    def __enter__(self) -> "ClienteModbus":
+    def __enter__(self) -> ClienteModbus:
         self.conectar()
         return self
 
@@ -370,8 +367,10 @@ class ScannerModbus:
                 confusao e exatamente o que uma ferramenta de diagnostico nao
                 pode produzir.
         """
-        alvo = intervalo if intervalo is not None else range(
-            self.primeiro_unit_id, self.ultimo_unit_id + 1
+        alvo = (
+            intervalo
+            if intervalo is not None
+            else range(self.primeiro_unit_id, self.ultimo_unit_id + 1)
         )
         resultado = ResultadoVarredura()
         for unit_id in alvo:

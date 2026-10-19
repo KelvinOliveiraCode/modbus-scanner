@@ -23,8 +23,16 @@ EXTENSOES = {".py", ".md", ".toml", ".yml", ".yaml", ".cfg", ".txt"}
 
 #: Diretorios e arquivos ignorados.
 IGNORADOS = {
-    ".git", ".pytest_cache", "__pycache__", "htmlcov", ".venv", "venv",
-    "build", "dist", ".coverage", "coverage.xml",
+    ".git",
+    ".pytest_cache",
+    "__pycache__",
+    "htmlcov",
+    ".venv",
+    "venv",
+    "build",
+    "dist",
+    ".coverage",
+    "coverage.xml",
 }
 
 #: Intervalo de ideogramas CJK.
@@ -56,25 +64,34 @@ def varrer(raiz: Path = RAIZ) -> list[tuple[str, int, str]]:
         try:
             texto = caminho.read_text(encoding="utf-8")
         except UnicodeDecodeError as exc:
-            problemas.append((
-                str(caminho.relative_to(raiz)), 0,
-                f"nao decodifica como UTF-8: {exc}",
-            ))
+            problemas.append(
+                (
+                    str(caminho.relative_to(raiz)),
+                    0,
+                    f"nao decodifica como UTF-8: {exc}",
+                )
+            )
             continue
         for numero, linha in enumerate(texto.splitlines(), 1):
             for caractere in linha:
                 ponto = ord(caractere)
                 if ponto == SUBSTITUICAO:
-                    problemas.append((
-                        str(caminho.relative_to(raiz)), numero,
-                        "caractere de substituicao U+FFFD",
-                    ))
+                    problemas.append(
+                        (
+                            str(caminho.relative_to(raiz)),
+                            numero,
+                            "caractere de substituicao U+FFFD",
+                        )
+                    )
                     break
                 if ponto in CJK:
-                    problemas.append((
-                        str(caminho.relative_to(raiz)), numero,
-                        f"ideograma CJK U+{ponto:04X}",
-                    ))
+                    problemas.append(
+                        (
+                            str(caminho.relative_to(raiz)),
+                            numero,
+                            f"ideograma CJK U+{ponto:04X}",
+                        )
+                    )
                     break
     return problemas
 

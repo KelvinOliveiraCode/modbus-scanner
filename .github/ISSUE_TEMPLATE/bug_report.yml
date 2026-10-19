@@ -1,0 +1,102 @@
+name: Relato de defeito
+description: Reporta um problema no modbuslab
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Reporte um comportamento por issue. Distinga o que foi observado, o que
+        foi deduzido do codigo e o que e hipotese: nao afirme uma reproducao
+        que voce nao rodou.
+
+        Se faltar alguma informacao, escreva `NOT_ENOUGH_INFO` e diga o que
+        falta. Falhas intermitentes e relatos so de codigo sao bem-vindos.
+
+        Nao inclua credencial, caminho privado nem dado de ambiente.
+
+  - type: checkboxes
+    id: antes
+    attributes:
+      label: Antes de enviar
+      options:
+        - label: Procurei nas issues abertas e fechadas por um relato parecido.
+          required: true
+        - label: Removi credencial, token e caminho privado do relato.
+          required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Enquadramento do protocolo (MBAP, PDU, excecao)
+        - Servidor Modbus TCP
+        - Scanner de barramento
+        - Leitura de consumo e calculo eletrico
+        - Mapa de registradores e dados YAML
+        - CLI
+        - Documentacao
+        - Outra
+    validations:
+      required: true
+
+  - type: textarea
+    id: observado
+    attributes:
+      label: Comportamento observado
+      description: O resultado real, com o comando exato e a saida.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproducao
+    attributes:
+      label: Reproducao
+      description: Os passos mais curtos que voce rodou, com a entrada usada.
+      placeholder: |
+        1. Instale com ...
+        2. Rode ...
+        3. Observe ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: esperado
+    attributes:
+      label: Comportamento esperado
+      description: "O resultado esperado, com a base: documentacao, codigo ou versao conhecida boa."
+    validations:
+      required: true
+
+  - type: input
+    id: versao
+    attributes:
+      label: Versao
+      description: A versao do modbuslab e a do Python.
+      placeholder: modbuslab 1.0.0; Python 3.11
+    validations:
+      required: true
+
+  - type: input
+    id: sistema
+    attributes:
+      label: Sistema e versao do Python
+      description: Sistema operacional, versao do Python e versao do pacote.
+      placeholder: Windows 11; Python 3.11.9; modbuslab 1.0.0
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidencia
+    attributes:
+      label: Saida ou evidencia
+      description: "A menor saida util: trecho do terminal, traceback, arquivo de exemplo. Se nao houver, escreva NOT_ENOUGH_INFO."
+    validations:
+      required: true
+
+  - type: textarea
+    id: analise
+    attributes:
+      label: Analise ou causa provavel
+      description: Opcional. Linke o codigo de origem e separe o que foi deduzido do codigo da hipotese. Nao e preciso um diagnostico.

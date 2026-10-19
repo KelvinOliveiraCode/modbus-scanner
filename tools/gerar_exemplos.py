@@ -89,20 +89,47 @@ def main() -> int:
     dispositivos = str(RAIZ / "dados" / "dispositivos.yaml")
 
     try:
-        _cod, varredura = rodar_cli([
-            "varrer", "--porta", str(porta),
-            "--de", IDS, "--ate", ATE, "--timeout", "3",
-        ])
+        _cod, varredura = rodar_cli(
+            [
+                "varrer",
+                "--porta",
+                str(porta),
+                "--de",
+                IDS,
+                "--ate",
+                ATE,
+                "--timeout",
+                "3",
+            ]
+        )
 
-        _cod, leitura = rodar_cli([
-            "ler", "--porta", str(porta),
-            "--de", IDS, "--ate", ATE, "--timeout", "3",
-            "--mapa", mapa, "--dispositivos", dispositivos,
-        ])
+        _cod, leitura = rodar_cli(
+            [
+                "ler",
+                "--porta",
+                str(porta),
+                "--de",
+                IDS,
+                "--ate",
+                ATE,
+                "--timeout",
+                "3",
+                "--mapa",
+                mapa,
+                "--dispositivos",
+                dispositivos,
+            ]
+        )
 
-        _cod, mapa_saida = rodar_cli([
-            "mapa", "--mapa", mapa, "--dispositivos", dispositivos,
-        ])
+        _cod, mapa_saida = rodar_cli(
+            [
+                "mapa",
+                "--mapa",
+                mapa,
+                "--dispositivos",
+                dispositivos,
+            ]
+        )
     finally:
         servidor.parar()
 
@@ -132,13 +159,16 @@ def main() -> int:
         cabecalho
         + "## 1. Varredura do barramento\n\n```\n"
         + "PS> python -m modbuslab varrer --porta 5020 --de 1 --ate 3\n"
-        + varredura + "```\n\n"
+        + varredura
+        + "```\n\n"
         + "## 2. Leitura de consumo pela rede\n\n```\n"
         + "PS> python -m modbuslab ler --porta 5020 --de 1 --ate 3\n"
-        + leitura + "```\n\n"
+        + leitura
+        + "```\n\n"
         + "## 3. Mapa de registradores\n\n```\n"
         + "PS> python -m modbuslab mapa\n"
-        + mapa_saida + "```\n",
+        + mapa_saida
+        + "```\n",
         encoding="utf-8",
     )
 

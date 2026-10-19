@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentacao do laboratorio
+    url: https://github.com/KelvinOliveiraCode/modbus-scanner#readme
+    about: Leia o README para instalacao, uso da CLI e mapa de registradores.
+  - name: Protocolo Modbus TCP
+    url: https://github.com/KelvinOliveiraCode/modbus-scanner/blob/main/docs/protocolo-modbus-tcp.md
+    about: Como o MBAP, o PDU e as excecoes estao implementados.
+  - name: Perguntas e discussao
+    url: https://github.com/KelvinOliveiraCode/modbus-scanner/discussions
+    about: Para pergunta aberta, duvida de uso ou ideia ainda em formacao.

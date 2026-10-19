@@ -132,13 +132,17 @@ def classificar_salto_pelo_angulo(
     proximo_12 = abs(salto_12 - SALTO_POSITIVO)
     proximo_23 = abs(salto_23 - SALTO_POSITIVO)
     veredito_12 = (
-        SEQUENCIA_POSITIVA if proximo_12 <= tolerancia
-        else SEQUENCIA_NEGATIVA if abs(salto_12 - SALTO_NEGATIVO) <= tolerancia
+        SEQUENCIA_POSITIVA
+        if proximo_12 <= tolerancia
+        else SEQUENCIA_NEGATIVA
+        if abs(salto_12 - SALTO_NEGATIVO) <= tolerancia
         else SEQUENCIA_INDETERMINADA
     )
     veredito_23 = (
-        SEQUENCIA_POSITIVA if proximo_23 <= tolerancia
-        else SEQUENCIA_NEGATIVA if abs(salto_23 - SALTO_NEGATIVO) <= tolerancia
+        SEQUENCIA_POSITIVA
+        if proximo_23 <= tolerancia
+        else SEQUENCIA_NEGATIVA
+        if abs(salto_23 - SALTO_NEGATIVO) <= tolerancia
         else SEQUENCIA_INDETERMINADA
     )
 
@@ -218,9 +222,7 @@ def avaliar_sequencia(
     )
 
     if sequencia == SEQUENCIA_NEGATIVA:
-        alertas.append(
-            "sequencia de fase invertida: ordem L1-L3-L2 em vez de L1-L2-L3"
-        )
+        alertas.append("sequencia de fase invertida: ordem L1-L3-L2 em vez de L1-L2-L3")
     elif sequencia == SEQUENCIA_INDETERMINADA:
         alertas.append(
             "angulos de fase fora do esperado para um sistema ideal; "
@@ -320,18 +322,12 @@ def calcular(
         do esperado.
     """
     ativa = float(dados.get("potencia_ativa", dados.get("demanda_ativa", 0.0)))
-    reativa = float(
-        dados.get("potencia_reativa", dados.get("demanda_reativa", 0.0))
-    )
+    reativa = float(dados.get("potencia_reativa", dados.get("demanda_reativa", 0.0)))
     fp = fator_potencia(ativa, reativa)
 
     if numero_fases >= 3:
-        tensoes = [
-            float(dados.get(f"tensao_{f}", 0.0)) for f in ("l1", "l2", "l3")
-        ]
-        tensao = sum(tensoes) / 3.0 if any(tensoes) else float(
-            dados.get("tensao", 0.0)
-        )
+        tensoes = [float(dados.get(f"tensao_{f}", 0.0)) for f in ("l1", "l2", "l3")]
+        tensao = sum(tensoes) / 3.0 if any(tensoes) else float(dados.get("tensao", 0.0))
         corrente = sum(
             float(dados.get(f"corrente_{f}", 0.0)) for f in ("l1", "l2", "l3")
         ) or float(dados.get("corrente", 0.0))
@@ -359,8 +355,12 @@ def calcular(
         tensoes = [float(dados.get(f"tensao_{f}", 0.0)) for f in ("l1", "l2", "l3")]
         if any(a > 0 for a in angulos):
             sequencia, alertas = avaliar_sequencia(
-                angulos[0], angulos[1], angulos[2],
-                tensoes[0], tensoes[1], tensoes[2],
+                angulos[0],
+                angulos[1],
+                angulos[2],
+                tensoes[0],
+                tensoes[1],
+                tensoes[2],
             )
             resultado.sequencia_fase = sequencia
             resultado.sequencia_invertida = sequencia == SEQUENCIA_NEGATIVA

@@ -21,21 +21,21 @@ servidor precisa atender em ciclo, nao fechar depois da primeira resposta.
 
 from __future__ import annotations
 
+import contextlib
 import socket
 import struct
 import threading
 from typing import TYPE_CHECKING
 
 from .protocolo import (
+    BYTES_ANTES_DO_COMPRIMENTO,
     EX_ENDERECO_ILEGAL,
     EX_FUNCAO_ILEGAL,
     EX_VALOR_ILEGAL,
-    FC_READ_HOLDING,
-    FC_READ_INPUT,
     FUNCOES_SUPORTADAS,
     MAX_REGISTRADORES_LEITURA,
     MIN_REGISTRADORES_LEITURA,
-    BYTES_ANTES_DO_COMPRIMENTO,
+    PROTOCOLO_MODBUS,
     TAMANHO_MAXIMO_QUADRO,
     TAMANHO_MBAP,
     ErroModbus,
@@ -91,7 +91,7 @@ class ServidorModbus:
 
     def __init__(
         self,
-        gerenciador: "GerenciadorDispositivos",
+        gerenciador: GerenciadorDispositivos,
         host: str = "127.0.0.1",
         porta: int = 5020,
     ) -> None:
@@ -168,17 +168,13 @@ class ServidorModbus:
 
         if len(pdu) < 5:
             self.excecoes_emitidas += 1
-            return montar_excecao(
-                mbap.transacao, mbap.unidade, funcao, EX_VALOR_ILEGAL
-            )
+            return montar_excecao(mbap.transacao, mbap.unidade, funcao, EX_VALOR_ILEGAL)
 
         endereco, quantidade = struct.unpack(">HH", pdu[1:5])
 
         if not (MIN_REGISTRADORES_LEITURA <= quantidade <= MAX_REGISTRADORES_LEITURA):
             self.excecoes_emitidas += 1
-            return montar_excecao(
-                mbap.transacao, mbap.unidade, funcao, EX_VALOR_ILEGAL
-            )
+            return montar_excecao(mbap.transacao, mbap.unidade, funcao, EX_VALOR_ILEGAL)
 
         with self._lock:
             brutos: list[int] = []
@@ -210,7 +206,7 @@ class ServidorModbus:
         pdu_resposta = bytes([funcao, len(dados)]) + dados
         resposta_mbap = Mbap(
             transacao=mbap.transacao,
-            protocolo=0,
+            protocolo=PROTOCOLO_MODBUS,
             comprimento=len(pdu_resposta) + 1,
             unidade=mbap.unidade,
         )
@@ -232,7 +228,7 @@ class ServidorModbus:
             while not self._parar.is_set():
                 try:
                     pedaco = conn.recv(512)
-                except socket.timeout:
+                except TimeoutError:
                     continue
                 except OSError:
                     break
@@ -258,10 +254,8 @@ class ServidorModbus:
                     except OSError:
                         return
         finally:
-            try:
+            with contextlib.suppress(OSError):
                 conn.close()
-            except OSError:
-                pass
 
     def _loop(self) -> None:
         """Laco de aceitacao.
@@ -277,7 +271,7 @@ class ServidorModbus:
                 break
             try:
                 conn, _endereco = sock.accept()
-            except socket.timeout:
+            except TimeoutError:
                 continue
             except OSError:
                 break
@@ -304,6 +298,25 @@ class ServidorModbus:
         )
         self._thread.start()
 
+    def aguardar_parada(self, timeout: float) -> bool:
+        """Espera o laco de aceitacao terminar, ate um limite de tempo.
+
+        Wait for the accept loop to stop, up to a time limit.
+
+        Metodo publico porque a CLI precisa do laco sob controle: sem ele, a
+        unica forma de esperar seria tocar no evento interno da classe, e um
+        detalhe de implementacao vazando para fora vira dependencia de todo
+        consumidor.
+
+        Args:
+            timeout: Segundos maxima de espera.
+
+        Returns:
+            ``True`` se o laco parou dentro do tempo, ``False`` se o tempo
+            estourou com o servidor ainda rodando.
+        """
+        return self._parar.wait(timeout)
+
     def parar(self) -> None:
         """Desliga o laco e fecha o socket.
 
@@ -311,20 +324,14 @@ class ServidorModbus:
         """
         self._parar.set()
         if self._sock is not None:
-            try:
+            with contextlib.suppress(OSError):
                 self._sock.close()
-            except OSError:
-                pass
             self._sock = None
         if self._thread is not None:
             self._thread.join(timeout=3.0)
             self._thread = None
 
-    # Atributos antigos, mantidos para compatibilidade com a CLI e os testes.
-    start = iniciar
-    stop = parar
-
-    def __enter__(self) -> "ServidorModbus":
+    def __enter__(self) -> ServidorModbus:
         self.iniciar()
         return self
 

@@ -21,7 +21,6 @@ from __future__ import annotations
 
 import socket
 import struct
-import threading
 from collections.abc import Iterator
 
 import pytest
@@ -37,7 +36,6 @@ from modbuslab.protocolo import (
     FC_READ_HOLDING,
     FC_READ_INPUT,
     ExcecaoRemota,
-    QuadroInvalido,
     RequisicaoLeitura,
     interpretar_resposta,
 )
@@ -239,9 +237,7 @@ class TestRegistradorLargoPelaRede:
             dados = ler_dispositivo(c, 3, mapas["medidor_demanda"])
         assert dados["energia_acumulada"] == pytest.approx(412880.0)
 
-    def test_as_duas_palavras_ocupam_dois_enderecos(
-        self, host_porta, ambiente
-    ) -> None:
+    def test_as_duas_palavras_ocupam_dois_enderecos(self, host_porta, ambiente) -> None:
         _, gerenciador, _ = ambiente
         host, porta = host_porta
         mapa = gerenciador.buscar(1).mapa
@@ -252,9 +248,7 @@ class TestRegistradorLargoPelaRede:
             assert c.ler(1, 4, 1)[0] == 0
             assert c.ler(1, 5, 1)[0] == 18432
 
-    def test_registrador_seguinte_nao_e_deslocado(
-        self, host_porta, ambiente
-    ) -> None:
+    def test_registrador_seguinte_nao_e_deslocado(self, host_porta, ambiente) -> None:
         # Um off-by-one aqui ja fez a frequencia aparecer no lugar do fator de
         # potencia, com o valor de 6,001 em vez de 0,939.
         _, _, mapas = ambiente
@@ -368,6 +362,7 @@ class TestFramingCru:
             sock.connect((host, porta))
             sock.sendall(req[:5])
             import time as _t
+
             _t.sleep(0.1)
             sock.sendall(req[5:])
             resp = sock.recv(64)
@@ -388,7 +383,7 @@ class TestFramingCru:
     def test_comprimento_do_mbap(self, host_porta) -> None:
         # O campo de comprimento conta unidade + PDU, e o quadro tem
         # 6 + comprimento bytes. Somar 7 trava o servidor.
-        host, porta = host_porta
+        _host, _porta = host_porta
         req = RequisicaoLeitura(1, 1, FC_READ_INPUT, 0, 1).empacotar()
         comprimento = struct.unpack(">H", req[4:6])[0]
         assert comprimento == 6
@@ -511,6 +506,7 @@ class TestScannerSobreServidorReal:
             assert sock.recv(64) == b""
         finally:
             sock.close()
+
     def test_servidor_fora_do_ar(self) -> None:
         g, _ = carregar_ambiente(DISPOSITIVOS, MAPA)
         s = ServidorModbus(g, porta=0)
@@ -539,7 +535,7 @@ class TestCriterioDeAceite:
     @pytest.fixture(scope="class")
     @staticmethod
     def leituras(ambiente) -> list[tuple]:
-        servidor, gerenciador, mapas = ambiente
+        servidor, gerenciador, _mapas = ambiente
         cliente = ClienteModbus("127.0.0.1", servidor.porta_em_uso, 3.0)
         cliente.conectar()
         saida = []
@@ -569,10 +565,11 @@ class TestCriterioDeAceite:
     def test_consumo_bate_com_os_registradores(self, leituras: list[tuple]) -> None:
         # O valor lido pela rede tem de ser igual ao valor que o medidor tem.
         for disp, dados, r in leituras:
-            assert dados["potencia_ativa" if disp.fases != 1 or "potencia_ativa" in dados
-                          else "demanda_ativa"] == pytest.approx(
-                r.potencia_ativa_w
-            )
+            assert dados[
+                "potencia_ativa"
+                if disp.fases != 1 or "potencia_ativa" in dados
+                else "demanda_ativa"
+            ] == pytest.approx(r.potencia_ativa_w)
 
     def test_energia_de_32_bits_bate(self, leituras: list[tuple]) -> None:
         valores = {d.id: r.energia_kwh for d, _, r in leituras}
@@ -599,7 +596,9 @@ class TestContadores:
     def test_conta_excecoes(self, ambiente) -> None:
         servidor, _, _ = ambiente
         antes = servidor.excecoes_emitidas
-        with ClienteModbus("127.0.0.1", servidor.porta_em_uso, 3.0) as c:
-            with pytest.raises(ExcecaoRemota):
-                c.ler(1, 900, 1)  # endereco fora do mapa do medidor 1
+        with (
+            ClienteModbus("127.0.0.1", servidor.porta_em_uso, 3.0) as c,
+            pytest.raises(ExcecaoRemota),
+        ):
+            c.ler(1, 900, 1)  # endereco fora do mapa do medidor 1
         assert servidor.excecoes_emitidas > antes

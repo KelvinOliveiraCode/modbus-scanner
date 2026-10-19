@@ -1,4 +1,9 @@
-pytest>=7.4
-pytest-cov>=4.1
-PyYAML>=6.0
--e .
+# Dependencias de desenvolvimento do modbuslab.
+#
+# A fonte unica de verdade das dependencias e o pyproject.toml (PEP 621).
+# Este arquivo so delega para ele, para nao duplicar a lista e nao deixar as
+# duas versoes divergirem.
+#
+#     pip install -e ".[dev]"
+#
+-e .[dev]

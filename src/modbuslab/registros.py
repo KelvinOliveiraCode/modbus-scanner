@@ -13,6 +13,7 @@ que separa um medidor do outro na rede e o unit id do MBAP, nao o endereco.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -155,7 +156,7 @@ class Registrador:
         Raises:
             ErroDeRegistro: Se o valor nao couber no tipo do registrador.
         """
-        bruto = int(round(valor * self.escala))
+        bruto = round(valor * self.escala)
         menor, maior = self._faixa_bruta
         if not (menor <= bruto <= maior):
             raise ErroDeRegistro(
@@ -169,13 +170,13 @@ class Registrador:
         sinal = bruto & 0xFFFFFFFF
         return [(sinal >> 16) & UINT16_MAX, sinal & UINT16_MAX]
 
-    def engenharia(self, brutos: list[int] | int) -> float:
+    def engenharia(self, brutos: Sequence[int] | int) -> float:
         """Converte os inteiros do fio para valor de engenharia.
 
         Convert the on-wire integers to an engineering value.
 
         Args:
-            brutos: Uma palavra, ou a lista de palavras do registrador.
+            brutos: Uma palavra, ou a sequencia de palavras do registrador.
 
         Returns:
             O valor na unidade do registrador.
@@ -191,7 +192,7 @@ class Registrador:
                 f"recebi {len(palavras)}"
             )
         if len(palavras) > self.palavras:
-            palavras = palavras[:self.palavras]
+            palavras = palavras[: self.palavras]
 
         for p in palavras:
             if not (0 <= p <= UINT16_MAX):
@@ -217,8 +218,7 @@ class Registrador:
         menor, maior = self._faixa_bruta
         if not (menor <= bruto <= maior):
             raise ErroDeRegistro(
-                f"{self.nome}: valor {bruto} fora de {self.tipo} "
-                f"({menor}..{maior})"
+                f"{self.nome}: valor {bruto} fora de {self.tipo} ({menor}..{maior})"
             )
         return bruto / self.escala
 
@@ -246,8 +246,9 @@ class MapaDeRegistros:
                 o que inclui o segundo endereco de um registrador largo.
         """
         ocupados = self.enderecos_ocupados()
-        conflitos = [e for e in range(reg.endereco, reg.endereco + reg.palavras)
-                     if e in ocupados]
+        conflitos = [
+            e for e in range(reg.endereco, reg.endereco + reg.palavras) if e in ocupados
+        ]
         if conflitos:
             raise ErroDeRegistro(
                 f"{self.nome}: endereco {reg.endereco} ({reg.nome}) "
@@ -395,12 +396,10 @@ def carregar_mapa(caminho: str | Path) -> dict[str, MapaDeRegistros]:
     Raises:
         ValueError: Se o topo do arquivo nao for um mapeamento.
     """
-    with open(caminho, "r", encoding="utf-8") as fh:
+    with open(caminho, encoding="utf-8") as fh:
         dados = yaml.safe_load(fh)
     if not isinstance(dados, dict):
-        raise ValueError(
-            f"{caminho}: esperado um mapeamento no topo do arquivo"
-        )
+        raise ValueError(f"{caminho}: esperado um mapeamento no topo do arquivo")
     resultado: dict[str, MapaDeRegistros] = {}
     for nome_mapa, definicao in dados.items():
         mapa = MapaDeRegistros(nome=str(nome_mapa))
