@@ -320,10 +320,6 @@ class ServidorModbus:
             self._thread.join(timeout=3.0)
             self._thread = None
 
-    # Atributos antigos, mantidos para compatibilidade com a CLI e os testes.
-    start = iniciar
-    stop = parar
-
     def __enter__(self) -> "ServidorModbus":
         self.iniciar()
         return self
