@@ -209,9 +209,9 @@ Unit ids sondados: 3
 
  Unit  Respondeu   Funcao   Registrador 0  Observacao
 -----  ---------- -------  --------------  --------------------------
-     1  sim              4            2194  valor bruto 2194
-     2  sim              4            2197  valor bruto 2197
-     3  sim              4            9600  valor bruto 9600
+    1  sim              4            2194  valor bruto 2194
+    2  sim              4            2197  valor bruto 2197
+    3  sim              4            9600  valor bruto 9600
 
 Devices encontrados: 3 de 3 sondados
 ```
@@ -233,9 +233,9 @@ modbuslab ler --porta 5020 --de 1 --ate 3
 
  ID  Dispositivo      Tipo                       V       A        W     var     FP       kWh  Fases
 ---------------------------------------------------------------------------------------------------
-   1  medidor-1pn      medidor monofasico     219.4   12.35     2430     890  0.939   18432.0  1
-   2  medidor-3pn      medidor trifasico      219.7   54.90    10980    3120  0.962   91240.0  3 (negativa)
-   3  medidor-demanda  medidor de demanda     220.3   43.58     9600    4100  0.920  412880.0  1
+  1  medidor-1pn      medidor monofasico     219.4   12.35     2430     890  0.939   18432.0  1
+  2  medidor-3pn      medidor trifasico      219.7   54.90    10980    3120  0.962   91240.0  3 (negativa)
+  3  medidor-demanda  medidor de demanda     220.3   43.58     9600    4100  0.920  412880.0  1
 ```
 
 Meter 2 has the inverted phase sequence, and the consumption flags it:
