@@ -13,6 +13,7 @@ que separa um medidor do outro na rede e o unit id do MBAP, nao o endereco.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -169,13 +170,13 @@ class Registrador:
         sinal = bruto & 0xFFFFFFFF
         return [(sinal >> 16) & UINT16_MAX, sinal & UINT16_MAX]
 
-    def engenharia(self, brutos: list[int] | int) -> float:
+    def engenharia(self, brutos: Sequence[int] | int) -> float:
         """Converte os inteiros do fio para valor de engenharia.
 
         Convert the on-wire integers to an engineering value.
 
         Args:
-            brutos: Uma palavra, ou a lista de palavras do registrador.
+            brutos: Uma palavra, ou a sequencia de palavras do registrador.
 
         Returns:
             O valor na unidade do registrador.
