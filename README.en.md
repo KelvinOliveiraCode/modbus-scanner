@@ -1,118 +1,121 @@
 # modbus-scanner
 
-<div align="center">
-
 **English** · [Português (Brasil)](README.md)
 
-</div>
-
-[![Python 3](https://img.shields.io/badge/Python-3.x-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/) [![scikit-learn](https://img.shields.io/badge/scikit--learn-F7931E?style=flat-square&logo=scikit-learn)](https://scikit-learn.org/) [![pandas](https://img.shields.io/badge/pandas-150458?style=flat-square&logo=pandas)](https://pandas.pydata.org/) [![pytest](https://img.shields.io/badge/pytest-0A9EDC?style=flat-square&logo=pytest)](https://docs.pytest.org/) [![MIT License](https://img.shields.io/badge/License-MIT-f4c430?style=flat-square)](LICENSE)
-
-### Protocolo Modbus TCP do zero: servidor de lab, scanner e leitura de medidores
-
----
+[![Python 3](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=flat-square&logo=python&logoColor=white)](#) [![PyYAML](https://img.shields.io/badge/PyYAML-only%20dep-3776AB?style=flat-square)](#) [![pytest](https://img.shields.io/badge/pytest-306%20tests-0A9EDC?style=flat-square&logo=pytest)](#) [![CI](https://img.shields.io/badge/CI-GitHub%20Actions-2088FF?style=flat-square&logo=githubactions)](#.github/workflows/ci.yml) [![MIT License](https://img.shields.io/badge/License-MIT-f4c430?style=flat-square)](LICENSE)
 
 ## What it is
 
-Protocolo Modbus TCP do zero: servidor de lab, scanner e leitura de medidores
+An implementation of the **Modbus TCP protocol from scratch**, in a lab: a **Modbus server** that runs locally, a **scanner** that sweeps the bus and discovers devices, and a **consumption read** (meters) over the network. The protocol — MBAP header, PDU, functions and exception codes — is built byte by byte. It is a networking/industrial-automation study project, fully local and fictitious.
 
----
+## Status
 
-## Quick Start
+An educational lab, working and tested (306 tests).
 
-```bash
-# Clone and enter
-git clone https://github.com/KelvinOliveiraCode/<repo>.git
-cd <repo>
+## Features
 
-# Install dependencies
-# No requirements.txt detected
+- **Modbus TCP lab server** for local development and testing.
+- **Bus scanner** (`varrer`): discovers which unit ids respond.
+- **Consumption read** (`ler`): reads meters over the network and writes the result to a file.
+- **Register map** (`mapa`): documents the register layout per device.
+- **Protocol from scratch**: MBAP header (7 bytes), PDU, functions 0x03 (read holding), 0x04 (read input), 0x06 (write single), 0x10 (write multiple) and exception codes.
+- The data is fictitious and the protocol is built with no external library (stdlib only).
 
-# Run the project
-python main.py
+## Architecture
 
-# Run tests
-pytest
+A `modbuslab` package with separate modules: `protocolo.py` (MBAP/PDU framing + functions + exceptions), `servidor.py` (lab server), `scanner.py` (sweep), `dispositivos.py` (catalog), `registros.py` (map) and `consumo.py` (meter read). Declarative configuration in `dados/*.yaml`.
+
+```mermaid
+flowchart LR
+    CLI[cli.py] --> S[servidor - start local lab]
+    CLI --> V[varrer - discover unit ids]
+    CLI --> L[ler - read consumption over network]
+    P[protocolo.py - MBAP + PDU + functions] --> S
+    P --> V
+    P --> L
+    D[dados - dispositivos.yaml, mapa-de-registros.yaml] --> L
 ```
 
-## How it works
+## Stack
 
-Estrutura limpa e modular com separação de responsabilidades.
+- Python ≥ 3.10
+- PyYAML ≥ 6.0 (only runtime dependency)
+- pytest + pytest-cov (dev)
+- CI: GitHub Actions on `windows-latest` (Python 3.11), 70% coverage floor
 
----
+## Repository layout
 
-## Capabilities
+```
+modbus-scanner/
+├── src/modbuslab/
+│   ├── protocolo.py      # MBAP/PDU framing, functions, exceptions
+│   ├── servidor.py       # Modbus TCP lab server
+│   ├── scanner.py        # sweeps the bus
+│   ├── dispositivos.py · registros.py
+│   ├── consumo.py        # meter read
+│   └── cli.py            # servidor/varrer/ler/mapa commands
+├── dados/
+│   ├── dispositivos.yaml      # 3 meters
+│   └── mapa-de-registros.yaml # register map per device
+├── tests/             # 306 tests
+├── docs/              # Modbus TCP protocol, register map
+├── exemplos/          # generated consumption read
+└── LICENSE            # MIT
+```
 
-| Capacidade | Descrição |
-|------------|-------------|
-| Carregamento de Dados | Auto-download do TensorFlow creditcard.csv (284k transações) com cache local |
-| EDA e Visualização | Distribuição de classes, histogramas de Amount, heatmaps de correlação (matplotlib/seaborn) |
-| Pré-processamento | RobustScaler em Amount/Time, split estratificado, remoção de duplicatas |
-| Balanceamento | SMOTE oversampling (fallback: class_weight="balanced") |
-| Modelagem | LogisticRegression, RandomForest, ExtraTrees com RandomizedSearchCV (StratifiedKFold) |
-| Métricas | Accuracy, Precision, Recall, F1, ROC AUC, Specificity, Confusion Matrix |
-| Seleção | Score ponderado: Recall 40% + F1 30% + Precision 20% + Accuracy 10% |
-| Persistência | Serialização joblib para modelo, scaler e resultados completos |
+## Prerequisites and installation
 
+Python ≥ 3.10.
 
----
+```bash
+python -m pip install -e ".[dev]"
+```
 
+## How to run
 
+```bash
+# Start the Modbus TCP lab server
+python -m modbuslab servidor --host 127.0.0.1 --porta 5020
 
----
+# Sweep the bus and list who responds
+python -m modbuslab varrer
 
-## FAQ
+# Read consumption over the network (writes the result)
+python -m modbuslab ler --host 127.0.0.1 --porta 5020 --saida leitura.txt
 
-<details>
-<summary><strong>What is this project?</strong></summary>
+# Show the register map
+python -m modbuslab mapa
+```
 
-A Python study/project demonstrating core concepts.
+## Tests and quality
 
-</details>
+Real run (verified by the agent):
 
-<details>
-<summary><strong>How do I run it?</strong></summary>
+```bash
+python -m pytest tests/
+# 306 passed in 13.43s
+```
 
-See [Quick Start](#quick-start) for copy-paste commands.
+- CI: `ci.yml` (windows-latest, Python 3.11) runs pytest with coverage (`fail-under=70`), checks encoding and the acceptance verification.
 
-</details>
+## Technical decisions and trade-offs
 
-<details>
-<summary><strong>Are there tests?</strong></summary>
+- **Protocol implemented from scratch** instead of a library (e.g. pymodbus): educational, no external dependency; the cost is re-implementing parts the library already does.
+- **Real network read** (local socket), not from inside the object: consumption is read the way a client would, which actually validates the protocol.
+- **YAML configuration**: adding a meter or register requires no code changes.
 
-No automated tests in this repository.
+## Known limitations and roadmap
 
-</details>
+- Local simulation (127.0.0.1); it does not talk to real field devices.
+- Implements basic reads (0x03/0x04) and writes (0x06/0x10); no broadcast or other functions.
+- No security layer — documented in `docs/protocolo` (Modbus has no authentication).
 
-<details>
-<summary><strong>Can I use this in production?</strong></summary>
+## Development process
 
-This is a **study/portfolio project**. Review and harden (auth, persistence, monitoring, etc.) before production use.
+An individual project by Kelvin Oliveira, built with orchestrated AI agents and reviewed by the author. The protocol implementation, the register map and the review are the author's.
 
-</details>
+## License and author
 
+MIT — Copyright (c) 2026 Kelvin Rebelo de Oliveira.
 
-
----
-
-## Documentation
-
-- **Source Code** ,  Browse the `src/` directory for implementation details
-- **API Reference** ,  Inline docstrings + type hints
-- **Architecture Diagram** ,  See [architecture.mermaid](docs/architecture.mermaid) (if present)
-- **Changelog** ,  [CHANGELOG.md](CHANGELOG.md) (if present)
-- **Contributing** ,  [CONTRIBUTING.md](CONTRIBUTING.md) (if present)
-
-## License
-
-[MIT](LICENSE) ,  Kelvin Oliveira
-
----
-
-<div align="center">
-
-**Built with** · Python 3 + scikit-learn + pandas
-
-**Author** · [Kelvin Oliveira](https://github.com/KelvinOliveiraCode) · [Portfolio](https://kelvinoliveiracode.github.io/portfolio/)
-
-</div>
+**Author**: [Kelvin Oliveira](https://github.com/KelvinOliveiraCode) · [Portfolio](https://kelvinoliveiracode.github.io/portfolio/)
